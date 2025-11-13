@@ -63,11 +63,11 @@
 }
 
 #button-previous-card:hover::after {
-  content: "Pergunta Anterior";
+  content: "Voltar Pergunta";
 }
 
 #button-next-card:hover::before {
-  content: "Próxima Pergunta";
+  content: "Avançar Pergunta";
 }
 
 /* ----- Caixas dos Cards ----- */

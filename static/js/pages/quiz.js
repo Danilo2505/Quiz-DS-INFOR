@@ -1,6 +1,8 @@
+// ----- Cards com Perguntas -----
 const buttonPreviousCard = document.querySelector("#button-previous-card");
 const buttonNextCard = document.querySelector("#button-next-card");
 
+// --- Escolher apenas uma Altenativa ---
 function escolherAlternativa(idPergunta, idAlternativa) {
   const ulAlternativas = document.querySelector(
     `.div-card-pergunta[id_pergunta="${idPergunta}"] .ul-alternativas`
@@ -19,6 +21,8 @@ function escolherAlternativa(idPergunta, idAlternativa) {
     .classList.add("alternativa-selecionada");
 }
 
+// --- Enviar Respostas para Correção ---
+// !!!
 function enviarRespostas() {
   // Procura algum Card Sem Resposta
   const cardSemResposta = document.querySelector(
@@ -49,6 +53,7 @@ async function verificarRespostas(idPergunta) {
   const idResposta = pergunta[0]["id_resposta"];
 }
 
+// --- Locomoção entre as Perguntas ---
 function voltarParaPrimeiraPergunta() {
   const divCardsPerguntas = document.querySelector("#div-cards-perguntas");
   const divCardBox = document.querySelector(".div-card-box");
@@ -56,7 +61,7 @@ function voltarParaPrimeiraPergunta() {
   divCardsPerguntas.scrollTo({ top: 0 });
 }
 
-function proximaAnterior() {
+function voltarPergunta() {
   const divCardsPerguntas = document.querySelector("#div-cards-perguntas");
   const divCardBox = document.querySelector(".div-card-box");
 
@@ -66,7 +71,7 @@ function proximaAnterior() {
   divCardsPerguntas.scrollBy(0, -alturaCardBox);
 }
 
-function proximaPergunta() {
+function avancarPergunta() {
   const divCardsPerguntas = document.querySelector("#div-cards-perguntas");
   const divCardBox = document.querySelector(".div-card-box");
 
@@ -76,6 +81,18 @@ function proximaPergunta() {
   divCardsPerguntas.scrollBy(0, alturaCardBox);
 }
 
-buttonPreviousCard.addEventListener("click", proximaAnterior);
+buttonPreviousCard.addEventListener("click", voltarPergunta);
 
-buttonNextCard.addEventListener("click", proximaPergunta);
+buttonNextCard.addEventListener("click", avancarPergunta);
+
+// ----- Testes -----
+const buttonTeste = document.querySelector("#button-teste");
+
+buttonTeste.addEventListener("click", () => {
+  const alerta = new Notificacao(
+    (tipo = "alerta"),
+    (titulo = "Teste de Alerta"),
+    (mensagem = "Mensagem de teste..."),
+    (icone = "")
+  );
+});

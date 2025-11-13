@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/css/reset.css" />
     <link rel="stylesheet" href="/static/css/fonts.css" />
     <link rel="stylesheet" href="/static/css/colors.css" />
+    <link rel="stylesheet" href="/static/css/components.css" />
     <link rel="stylesheet" href="/static/css/global.css" />
     <!-- --- CSS Específico --- -->
     <link rel="stylesheet" href="/static/css/pages/quiz.css" />
@@ -17,6 +18,7 @@
   <!-- ----- Scripts ----- -->
   <script src="/static/js/helpers.js"></script>
   <script src="/static/js/db.js"></script>
+  <script src="/static/js/components.js"></script>
   <script src="/static/js/themeManager.js" defer></script>
   <!-- --- Script Específico --- -->
   <script src="/static/js/pages/quiz.js" defer></script>
@@ -79,6 +81,15 @@
         </div>
       </div>
     </div>
+
+    <!-- --- Botão de Testes --- -->
+    <button id="button-teste">
+      <img
+        src="/static/assets/icons/flask-fill.svg"
+        alt="Frasco de Vidro"
+        onload="buscarSvg(this)"
+      />
+    </button>
 
     <!-- --- Botão de Tema --- -->
     <button id="button-tema" aria-label="Mudar tema"></button>

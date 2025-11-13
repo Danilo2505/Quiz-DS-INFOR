@@ -11,3 +11,8 @@ const buscarSvg = (image) => {
       return true;
     });
 };
+
+// Espera um tempo em milissegundos
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

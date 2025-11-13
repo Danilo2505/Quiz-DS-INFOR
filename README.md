@@ -1,2 +1,2 @@
-# Quiz-DS-INFOR
+# Quiz Desenvolvimento de Sistemas e Informática
  
