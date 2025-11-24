@@ -1,3 +1,4 @@
-- Implementar Alertas
-  - https://www.youtube.com/watch?v=3t5KxsGnTmI
-- Escolher Questões
+- Passar as questões e respostas do usuário para a página resultado.html
+- Corrigir as questões na resultado.html e mostrar o resultado
+-- Implementar tela de carregamento
+- Criar um sitema de notificações

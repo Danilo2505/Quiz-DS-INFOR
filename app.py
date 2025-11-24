@@ -1,14 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import mysql.connector
 import os
+import subprocess
 import json
+from werkzeug.routing import BaseConverter
+
+
+class ListConverter(BaseConverter):
+    def to_python(self, value):
+        return [int(x) for x in value.split(",")]
+
+    def to_url(self, value):
+        return ",".join(str(x) for x in value)
 
 
 app = Flask(__name__)
+app.url_map.converters["list"] = ListConverter  # Para receber listas na rota
 
 HOST = "0.0.0.0"
 PORT = 5000
 DB_NAME = "quiz_ds_infor"
+CAMINHO_INICIALIZADOR_MYSQL = r"C:\xampp\mysql_start.bat"
 
 caminho_schema_sql = "schema.sql"
 caminho_population_sql = "population.sql"
@@ -39,6 +51,18 @@ def limpar_terminal(aguardar: bool = False):
 
 
 # ----- Banco de Dados -----
+
+
+def inicializar_mysql():
+    try:
+        if os.path.exists(CAMINHO_INICIALIZADOR_MYSQL):
+            subprocess.Popen(
+                [CAMINHO_INICIALIZADOR_MYSQL],
+                shell=True,
+            )
+    except Exception as e:
+        print("----- Erro ao iniciar o MySQL -----")
+        print(e)
 
 
 def executar_sql(caminho_sql: str):
@@ -497,7 +521,7 @@ def atualizar_html():
 
 
 # --- API ---
-# Alunos por sala
+# Pega todas as perguntas
 @app.route("/api/perguntas")
 def obter_pergunta():
     id = request.args.get("id")
@@ -515,11 +539,38 @@ def obter_pergunta():
     return pergunta
 
 
+# Pega determinadas perguntas de acordo com uma lista
+@app.route("/api/perguntas_especificas/<list:perguntas_ids>")
+def obter_perguntas_especificas(perguntas_ids):
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    placeholders = ", ".join(["%s"] * len(perguntas_ids))
+    query = "SELECT * FROM perguntas WHERE id IN ({})".format(placeholders)
+
+    # Executa a query passando a lista como tupla
+    cursor.execute(query, tuple(perguntas_ids))
+
+    respostas = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    # Retorna a lista de dicionários formatada como uma resposta JSON HTTP
+    return jsonify(respostas)
+
+
 if __name__ == "__main__":
+    # Execução Antes do Servidor
     with app.app_context():
+        inicializar_mysql()
         limpar_terminal()
         print("----- Inicializando Banco de Dados -----")
         inicializar_banco_de_dados()
         print("----- Populando Banco de Dados -----")
         popular_db()
+        limpar_terminal()
+    # Inicia o Servidor
     app.run(host=HOST, port=PORT, debug=True)

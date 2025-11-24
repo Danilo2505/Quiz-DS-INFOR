@@ -22,8 +22,7 @@ function escolherAlternativa(idPergunta, idAlternativa) {
 }
 
 // --- Enviar Respostas para Correção ---
-// !!!
-function enviarRespostas() {
+async function enviarRespostas() {
   // Procura algum Card Sem Resposta
   const cardSemResposta = document.querySelector(
     `.div-card-pergunta[id_pergunta]:not(:has(.alternativa-selecionada))`
@@ -34,7 +33,7 @@ function enviarRespostas() {
   }
 
   // Pega as Alternativas Selecionadas e guarda junto ao ID da Pergunta
-  let perguntasERespostas = [];
+  let perguntasERespostas = {};
   const alternativasSelecionadas = document.querySelectorAll(
     `.alternativa-selecionada`
   );
@@ -42,9 +41,34 @@ function enviarRespostas() {
     const idPergunta =
       alternativa.parentElement.parentElement.getAttribute("id_pergunta");
     const idAlternativa = alternativa.getAttribute("id_alternativa");
-    perguntasERespostas = [...perguntasERespostas, [idPergunta, idAlternativa]];
+    perguntasERespostas = {
+      ...perguntasERespostas,
+      [idPergunta]: idAlternativa,
+    };
   });
 
+  const dadosDoFlask = await fazerRequisicaoFlask(
+    "/api/perguntas_especificas",
+    Object.keys(perguntasERespostas)
+  );
+
+  for (const [idQuestao, idResposta] of Object.entries(perguntasERespostas)) {
+    const questao = dadosDoFlask.filter((questao) => {
+      return questao ? idQuestao == questao.id : false;
+    })[0];
+
+    if (idResposta != questao.id_resposta) {
+      console.log(`Errou a pergunta ${questao.id}`);
+    } else {
+      console.log(`Acertou a pergunta ${questao.id}`);
+    }
+  }
+
+  // !!!
+  // Salvar o conteúdo do resultado em um cookie
+  // Redirecionar para a página de resultados
+  // Acessar o cookie na página de resultados
+  // !!!
   console.log(perguntasERespostas);
 }
 
