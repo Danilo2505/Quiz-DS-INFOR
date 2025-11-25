@@ -591,6 +591,30 @@ def resultado_dados():
     return jsonify(dados)
 
 
+# Pega determinadas perguntas de acordo com uma lista
+@app.route("/api/explicacao_questao/<int:id_explicacao>", methods=["GET"])
+def explicacao_questao(id_explicacao):
+    # !!!
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    placeholders = ", ".join(["%s"] * len(id_explicacao))
+    query = "SELECT * FROM perguntas WHERE id IN ({})".format(placeholders)
+
+    # Executa a query passando a lista como tupla
+    cursor.execute(query, tuple(id_explicacao))
+
+    respostas = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    # Retorna a lista de dicionários formatada como uma resposta JSON HTTP
+    return jsonify(respostas)
+
+
 if __name__ == "__main__":
     # Execução Antes do Servidor
     with app.app_context():

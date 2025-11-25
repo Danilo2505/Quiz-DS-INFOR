@@ -82,3 +82,69 @@ class Notificacao {
     this.remover();
   }
 }
+// Classe para controlar a Tela de Carregamento
+class TelaCarregamento {
+  constructor(mensagemInicial = "") {
+    this.mensagemInicial = mensagemInicial;
+
+    // Seleciona a <div> principal, se existir
+    this.divTelaCarregamento = document.querySelector("#div-load-screen");
+
+    // Cria a tela de carregamento se ela não existir
+    if (!this.divTelaCarregamento) {
+      this.construirTelaCarregamento();
+      this.divTelaCarregamento = document.querySelector("#div-load-screen");
+    }
+
+    // Seleciona os elementos internos
+    this.spanInfoProgresso = this.divTelaCarregamento.querySelector(
+      ".span-progress-info"
+    );
+
+    // Define a mensagem inicial, se houver
+    if (this.mensagemInicial) {
+      this.definirInfoProgresso(this.mensagemInicial);
+    }
+  }
+
+  construirTelaCarregamento() {
+    // Cria o elemento principal da Tela de Carregamento
+    this.divTelaCarregamento = document.createElement("div");
+    this.divTelaCarregamento.id = "div-load-screen";
+    this.divTelaCarregamento.style.display = "none";
+
+    // --- Ícone de carregamento ---
+    this.imgIcone = document.createElement("img");
+    this.imgIcone.src = "/static/assets/icons/arrow-clockwise.svg";
+    this.imgIcone.alt = "";
+    this.imgIcone.setAttribute("onload", "buscarSvg(this)");
+    this.divTelaCarregamento.appendChild(this.imgIcone);
+
+    // --- Texto dinâmico de progresso ---
+    this.spanInfoProgresso = document.createElement("span");
+    this.spanInfoProgresso.classList.add("span-progress-info");
+    this.divTelaCarregamento.appendChild(this.spanInfoProgresso);
+
+    // Acrescenta ao body
+    document.body.appendChild(this.divTelaCarregamento);
+  }
+
+  // --- Atualiza a mensagem de progresso ---
+  definirInfoProgresso(info = "") {
+    this.spanInfoProgresso.textContent = info;
+  }
+
+  // --- Mostra a Tela de Carregamento ---
+  mostrar(mensagem = "") {
+    this.divTelaCarregamento.style.display = "flex";
+    if (mensagem) {
+      this.definirInfoProgresso(mensagem);
+    }
+  }
+
+  // --- Oculta a Tela de Carregamento ---
+  ocultar() {
+    this.divTelaCarregamento.style.display = "none";
+    this.definirInfoProgresso("");
+  }
+}

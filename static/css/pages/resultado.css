@@ -1,0 +1,71 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  min-width: 60dvw;
+  width: 100%;
+  max-width: 90dvw;
+  border: 1px solid var(--accent-color-1);
+  border-radius: 2rem;
+  padding: 2rem;
+}
+
+.p-resposta-correta span,
+.p-resposta-usuario span {
+  font-weight: bold;
+}
+
+/* ================================
+   MOBILE FIRST BREAKPOINTS
+   ================================ */
+
+/* Base: até 480px
+   - Smartphones pequenos (iPhone SE, Android compactos)
+   - O CSS fora das media queries cobre esse tamanho
+*/
+
+/* 480px — Smartphones médios/grandes */
+@media (min-width: 480px) {
+  main {
+  }
+}
+
+/* 600px — Smartphones grandes e pequenos tablets em modo retrato */
+@media (min-width: 600px) {
+  main {
+    min-width: 60dvw;
+    max-width: 80dvw;
+  }
+}
+
+/* 768px — Tablets padrão (iPad em retrato) */
+@media (min-width: 768px) {
+  main {
+    min-width: 60dvw;
+    max-width: 70dvw;
+  }
+}
+
+/* 1024px — Tablets em paisagem / Laptops bem pequenos */
+@media (min-width: 1024px) {
+  main {
+    width: auto;
+  }
+}
+
+/* 1280px — Laptops comuns e desktops pequenos */
+@media (min-width: 1280px) {
+  main {
+  }
+}
+
+/* 1536px — Monitores grandes */
+@media (min-width: 1536px) {
+  main {
+    /* !!! */
+    max-width: 1400px;
+  }
+}

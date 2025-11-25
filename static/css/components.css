@@ -1,7 +1,50 @@
+/* --- Lista de Notificações --- */
 #div-notification-list {
   position: fixed;
   top: 1rem;
   right: 1rem;
   display: flex;
   flex-direction: column;
+}
+
+/* --- Tela de Carregamento --- */
+#div-load-screen {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color-1);
+  color: var(--accent-color-1);
+}
+
+#div-load-screen > .span-progress-info {
+  font-size: 1.5rem;
+}
+
+#div-load-screen > * {
+  color: inherit;
+  font-size: 2rem;
+}
+
+#div-load-screen > svg {
+  width: 4rem;
+  height: auto;
+  animation: spin 1.5s linear infinite;
+}
+
+/* ----- Animações ----- */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

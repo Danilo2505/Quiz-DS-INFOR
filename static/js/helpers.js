@@ -17,36 +17,29 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Faz uma requisição para o Flask e retorna os dados em JSON
-async function getData(apiLink, parametros) {
-  // Constrói o link da requisição com os parâmetros, se houver
-  const linkRequisicao = parametros ? `${apiLink}/${parametros}` : apiLink;
-  return fetch(linkRequisicao).then((response) => {
-    if (!response.ok) {
-      throw new Error(`Error HTTP! Status: ${response.status}`);
+// Espera um elemento aparecer no DOM de acordo com o seletor
+function esperarPorElemento(selector) {
+  return new Promise((resolve) => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
     }
-    return response.json(); // Transforma a resposta JSON do Flask
+
+    const observer = new MutationObserver((mutations) => {
+      if (document.querySelector(selector)) {
+        observer.disconnect();
+        resolve(document.querySelector(selector));
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
   });
 }
 
-async function postData(url, data) {
-  try {
-    const response = await fetch(url, {
-      method: "POST", // Specify the HTTP method as POST
-      headers: {
-        "Content-Type": "application/json", // Set the Content-Type header for JSON data
-      },
-      body: JSON.stringify(data), // Convert the data object to a JSON string
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json(); // Parse the JSON response
-    return responseData;
-  } catch (error) {
-    console.error("Error during POST request:", error);
-    throw error; // Re-throw the error for further handling
-  }
-}
+// --- Geração de Arrays de Caracteres ---
+const rangeChar = (start, end) =>
+  Array.from({ length: end.charCodeAt(0) - start.charCodeAt(0) + 1 }, (_, i) =>
+    String.fromCharCode(start.charCodeAt(0) + i)
+  );

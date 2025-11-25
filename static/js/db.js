@@ -130,3 +130,38 @@ async function excluirDadoFlask(tabela, condicao, params = []) {
     throw erro;
   }
 }
+
+// --- Requisições Fetch ---
+// Faz uma requisição para o Flask e retorna os dados em JSON
+async function getData(apiLink, parametros) {
+  // Constrói o link da requisição com os parâmetros, se houver
+  const linkRequisicao = parametros ? `${apiLink}/${parametros}` : apiLink;
+  return fetch(linkRequisicao).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Error HTTP! Status: ${response.status}`);
+    }
+    return response.json(); // Transforma a resposta JSON do Flask
+  });
+}
+
+async function postData(url, data) {
+  try {
+    const response = await fetch(url, {
+      method: "POST", // Specify the HTTP method as POST
+      headers: {
+        "Content-Type": "application/json", // Set the Content-Type header for JSON data
+      },
+      body: JSON.stringify(data), // Convert the data object to a JSON string
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json(); // Parse the JSON response
+    return responseData;
+  } catch (error) {
+    console.error("Error during POST request:", error);
+    throw error; // Re-throw the error for further handling
+  }
+}
