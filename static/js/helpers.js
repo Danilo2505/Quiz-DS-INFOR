@@ -18,8 +18,10 @@ function delay(ms) {
 }
 
 // Faz uma requisição para o Flask e retorna os dados em JSON
-async function fazerRequisicaoFlask(apiLink, parametros) {
-  return fetch(`${apiLink}/${parametros}`).then((response) => {
+async function getData(apiLink, parametros) {
+  // Constrói o link da requisição com os parâmetros, se houver
+  const linkRequisicao = parametros ? `${apiLink}/${parametros}` : apiLink;
+  return fetch(linkRequisicao).then((response) => {
     if (!response.ok) {
       throw new Error(`Error HTTP! Status: ${response.status}`);
     }

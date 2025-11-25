@@ -47,29 +47,13 @@ async function enviarRespostas() {
     };
   });
 
-  const dadosDoFlask = await fazerRequisicaoFlask(
-    "/api/perguntas_especificas",
-    Object.keys(perguntasERespostas)
-  );
+  // Faz uma requisição POST para enviar os dados ao Flask e redireciona para a página de resultados
+  const resposta = await postData("/api/enviar_respostas_para_resultado", {
+    perguntasERespostas: perguntasERespostas,
+  });
 
-  for (const [idQuestao, idResposta] of Object.entries(perguntasERespostas)) {
-    const questao = dadosDoFlask.filter((questao) => {
-      return questao ? idQuestao == questao.id : false;
-    })[0];
-
-    if (idResposta != questao.id_resposta) {
-      console.log(`Errou a pergunta ${questao.id}`);
-    } else {
-      console.log(`Acertou a pergunta ${questao.id}`);
-    }
-  }
-
-  // !!!
-  // Salvar o conteúdo do resultado em um cookie
-  // Redirecionar para a página de resultados
-  // Acessar o cookie na página de resultados
-  // !!!
-  console.log(perguntasERespostas);
+  // Redireciona para a página de resultados
+  window.location.href = resposta.redirect;
 }
 
 async function verificarRespostas(idPergunta) {

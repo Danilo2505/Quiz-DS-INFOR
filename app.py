@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import mysql.connector
 import os
 import subprocess
@@ -16,6 +16,10 @@ class ListConverter(BaseConverter):
 
 app = Flask(__name__)
 app.url_map.converters["list"] = ListConverter  # Para receber listas na rota
+# !!! Definir uma secret key na .env quand for entregar !!!
+# app.secret_key = secrets.token_hex(32)
+app.secret_key = "a75f208f9bca54f9131027009f9ec4ba6e8d71955c98450c6d9d37e7c838ca36"
+
 
 HOST = "0.0.0.0"
 PORT = 5000
@@ -308,6 +312,13 @@ def quiz():
     )
 
 
+# Quiz
+@app.route("/resultado.html")
+def resultado():
+    # !!!
+    return render_template("resultado.html")
+
+
 '''
 # Criar
 @app.route("/adicionar.html")
@@ -522,7 +533,7 @@ def atualizar_html():
 
 # --- API ---
 # Pega todas as perguntas
-@app.route("/api/perguntas")
+@app.route("/api/perguntas", methods=["GET"])
 def obter_pergunta():
     id = request.args.get("id")
 
@@ -540,7 +551,7 @@ def obter_pergunta():
 
 
 # Pega determinadas perguntas de acordo com uma lista
-@app.route("/api/perguntas_especificas/<list:perguntas_ids>")
+@app.route("/api/perguntas_especificas/<list:perguntas_ids>", methods=["GET"])
 def obter_perguntas_especificas(perguntas_ids):
     conexao = mysql.connector.connect(
         host="localhost", user="root", password="", database=DB_NAME
@@ -560,6 +571,24 @@ def obter_perguntas_especificas(perguntas_ids):
 
     # Retorna a lista de dicionários formatada como uma resposta JSON HTTP
     return jsonify(respostas)
+
+
+# Passa os dados recebidos do quiz para a página de resultado
+@app.route("/api/enviar_respostas_para_resultado", methods=["POST"])
+def enviar_respostas_para_resultado():
+    # Pegar o JSON corretamente
+    dados = request.get_json()
+    # Salva na sessão para pegar na página resultado
+    session["dados_resultado"] = dados
+    # Retorna JSON dizendo para onde redirecionar
+    return jsonify({"status": "ok", "redirect": url_for("resultado")})
+
+
+# Pega os dados salvos na sessão para mostrar na página de resultado
+@app.route("/api/resultado_dados", methods=["GET"])
+def resultado_dados():
+    dados = session.get("dados_resultado", {})
+    return jsonify(dados)
 
 
 if __name__ == "__main__":
