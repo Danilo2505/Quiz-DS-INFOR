@@ -38,16 +38,22 @@ function criarCardQuestaoCorrecao(idRespostaUsuario, dadosQuestao) {
     h2.textContent = `✔️ Questão ${dadosQuestao.id}`;
   } else {
     h2.textContent = `❌ Questão ${dadosQuestao.id}`;
-    const h6ExplicacaoTitulo = document.createElement("h5");
+    const h5Explicacao = document.createElement("h5");
+    const h6ExplicacaoTitulo = document.createElement("h6");
     const pExplicacaoTexto = document.createElement("p");
+    h6ExplicacaoTitulo.classList.add("h5-explicacao");
     h6ExplicacaoTitulo.classList.add("h6-explicacao-titulo");
     pExplicacaoTexto.classList.add("p-explicacao-texto");
+    h5Explicacao.textContent = "Explicação:";
     getData(`/api/explicacao_questao`, dadosQuestao.id_explicacao).then(
       (explicacao) => {
-        h6ExplicacaoTitulo.textContent = explicacao.titulo;
-        pExplicacaoTexto.textContent = explicacao.texto;
+        console.log(explicacao[0]);
+        explicacao[0].conteudo = JSON.parse(explicacao[0].conteudo);
+        h6ExplicacaoTitulo.textContent = explicacao[0].conteudo.titulo;
+        pExplicacaoTexto.textContent = explicacao[0].conteudo.texto;
       }
     );
+    divCardQuestao.appendChild(h5Explicacao);
     divCardQuestao.appendChild(h6ExplicacaoTitulo);
     divCardQuestao.appendChild(pExplicacaoTexto);
   }

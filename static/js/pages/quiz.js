@@ -2,6 +2,101 @@
 const buttonPreviousCard = document.querySelector("#button-previous-card");
 const buttonNextCard = document.querySelector("#button-next-card");
 
+// --- Criar Card para uma Pergunta ---
+function criarCardPergunta(pergunta) {
+  // Cria os elementos do card da pergunta
+  const divCardBox = document.createElement("div");
+  const divCardPergunta = document.createElement("div");
+  const ulTemas = document.createElement("ul");
+  const pConteudoPergunta = document.createElement("p");
+  const ulAlternativas = document.createElement("ul");
+
+  // Adiciona classes aos elementos criados
+  divCardBox.classList.add("div-card-box");
+  divCardPergunta.classList.add("div-card-pergunta");
+  ulTemas.classList.add("ul-temas");
+  pConteudoPergunta.classList.add("p-conteudo-pergunta");
+  ulAlternativas.classList.add("ul-alternativas");
+
+  // Adiciona o ID da pergunta ao card
+  divCardPergunta.setAttribute("id_pergunta", pergunta.id);
+
+  // Adiciona os temas da pergunta
+  for (nomeTema of nomesTemas[pergunta.id]) {
+    const liTema = document.createElement("li");
+    liTema.classList.add("li-tema");
+    liTema.innerHTML = nomeTema;
+    ulTemas.append(liTema);
+  }
+
+  // Adiciona as alternativas da pergunta
+  for (let i = 0; i < pergunta.alternativas.length; i++) {
+    const liAlternativa = document.createElement("li");
+    liAlternativa.classList.add("li-alternativa");
+    liAlternativa.setAttribute("id_alternativa", i + 1);
+
+    const buttonAlternativa = document.createElement("button");
+    buttonAlternativa.classList.add("button-alternativa");
+    buttonAlternativa.setAttribute(
+      "onclick",
+      `escolherAlternativa(${pergunta.id}, ${i + 1})`
+    );
+    buttonAlternativa.textContent = `${indicadoresAlternativas[i]}) ${pergunta.alternativas[i]}`;
+
+    liAlternativa.append(buttonAlternativa);
+    ulAlternativas.append(liAlternativa);
+  }
+
+  // Adiciona o conteúdo da pergunta
+  pConteudoPergunta.textContent = pergunta.conteudo.pergunta;
+
+  // Monta a estrutura do card da pergunta
+  divCardPergunta.appendChild(ulTemas);
+  divCardPergunta.appendChild(pConteudoPergunta);
+  divCardPergunta.appendChild(ulAlternativas);
+  divCardBox.appendChild(divCardPergunta);
+
+  return divCardBox;
+}
+
+// --- Carregar Questões ---
+function carregarPerguntas() {
+  const divCardsPerguntas = document.querySelector("#div-cards-perguntas");
+  const parentDivCardEnvio =
+    document.querySelector(".div-card-envio").parentNode;
+  let idsPerguntas = perguntas;
+
+  // Pega os parâmetros da URL
+  const queryString = window.location.search;
+  // Cria um objeto URLSearchParams
+  const urlParams = new URLSearchParams(queryString);
+  // Pega todos os valores do parâmetro "q"
+  const idsQuestoes = urlParams.getAll("q");
+
+  // Filtra as perguntas para carregar apenas as que estão na URL
+  if (idsQuestoes.length !== 0) {
+    idsPerguntas = perguntas.filter((p) =>
+      idsQuestoes.includes(p.id.toString())
+    );
+  }
+
+  // Cria os cards das perguntas
+  for (pergunta of idsPerguntas) {
+    divCardsPerguntas.insertBefore(
+      criarCardPergunta(pergunta),
+      parentDivCardEnvio
+    );
+  }
+
+  // Scroll para o primeiro card sem resposta
+  const cardSemResposta = document.querySelector(
+    `.div-card-pergunta[id_pergunta]:not(:has(.alternativa-selecionada))`
+  );
+  if (cardSemResposta) {
+    cardSemResposta.scrollIntoView();
+  }
+}
+
 // --- Escolher apenas uma Altenativa ---
 function escolherAlternativa(idPergunta, idAlternativa) {
   const ulAlternativas = document.querySelector(
@@ -28,7 +123,10 @@ async function enviarRespostas() {
     `.div-card-pergunta[id_pergunta]:not(:has(.alternativa-selecionada))`
   );
   if (cardSemResposta) {
-    cardSemResposta.scrollIntoView();
+    const p = document.querySelector(".div-card-envio p");
+    // !!!
+    p.textContent = "Há perguntas sem resposta! Realmente deseja enviar?";
+    // cardSemResposta.scrollIntoView();
     return;
   }
 
@@ -89,18 +187,25 @@ function avancarPergunta() {
   divCardsPerguntas.scrollBy(0, alturaCardBox);
 }
 
-buttonPreviousCard.addEventListener("click", voltarPergunta);
+function execucaoInicial() {
+  console.log("A");
+  carregarPerguntas();
+  console.log("B");
 
-buttonNextCard.addEventListener("click", avancarPergunta);
+  buttonPreviousCard.addEventListener("click", voltarPergunta);
+  buttonNextCard.addEventListener("click", avancarPergunta);
 
-// ----- Testes -----
-const buttonTeste = document.querySelector("#button-teste");
+  // ----- Testes -----
+  const buttonTeste = document.querySelector("#button-teste");
 
-buttonTeste.addEventListener("click", () => {
-  const alerta = new Notificacao(
-    (tipo = "alerta"),
-    (titulo = "Teste de Alerta"),
-    (mensagem = "Mensagem de teste..."),
-    (icone = "")
-  );
-});
+  buttonTeste.addEventListener("click", () => {
+    const alerta = new Notificacao(
+      (tipo = "alerta"),
+      (titulo = "Teste de Alerta"),
+      (mensagem = "Mensagem de teste..."),
+      (icone = "")
+    );
+  });
+}
+
+execucaoInicial();

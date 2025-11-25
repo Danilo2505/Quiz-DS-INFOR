@@ -15,6 +15,13 @@
     <link rel="stylesheet" href="/static/css/pages/quiz.css" />
   </head>
 
+  <!-- Armazena as variáveis do Jinja2 -->
+  <script>
+    const perguntas = {{ perguntas | tojson }};
+    const nomesTemas = {{ nomes_temas | tojson }};
+    const indicadoresAlternativas = {{ indicadores_alternativas | tojson }};
+  </script>
+
   <!-- ----- Scripts ----- -->
   <script src="/static/js/helpers.js"></script>
   <script src="/static/js/db.js"></script>
@@ -43,7 +50,7 @@
         </button>
       </div>
       <!-- ----- Cards das Perguntas ----- -->
-      {% for pergunta in perguntas %}
+      <!-- {% for pergunta in perguntas %}
       <div class="div-card-box">
         <div class="div-card-pergunta" id_pergunta="{{ pergunta.id }}">
           <ul class="ul-temas">
@@ -67,11 +74,12 @@
           </ul>
         </div>
       </div>
-      {% endfor %}
+      {% endfor %} -->
       <!-- ----- Card de Envio ----- -->
       <div class="div-card-box">
         <div class="div-card-envio">
-          <p>Deseja enviar?</p>
+          <h3>Deseja enviar?</h3>
+          <p></p>
           <div>
             <button onclick="enviarRespostas()" class="button-sim">Sim</button>
             <button onclick="voltarParaPrimeiraPergunta()" class="button-nao">

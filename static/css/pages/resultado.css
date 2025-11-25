@@ -11,6 +11,7 @@ main {
   border: 1px solid var(--accent-color-1);
   border-radius: 2rem;
   padding: 2rem;
+  margin: min(5dvw, 2rem) 0;
 }
 
 .p-resposta-correta span,

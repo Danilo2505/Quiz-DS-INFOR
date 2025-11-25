@@ -59,7 +59,7 @@ def limpar_terminal(aguardar: bool = False):
 
 def inicializar_mysql():
     try:
-        if os.path.exists(CAMINHO_INICIALIZADOR_MYSQL):
+        if os.system == "nt" and os.path.exists(CAMINHO_INICIALIZADOR_MYSQL):
             subprocess.Popen(
                 [CAMINHO_INICIALIZADOR_MYSQL],
                 shell=True,
@@ -283,9 +283,6 @@ def popular_db():
 # Ler/Listar
 @app.route("/")
 def index():
-    # Redireciona para a rota quiz
-    return redirect(url_for("quiz"))
-
     # Faz uma requisição por todas as perguntas
     perguntas = listar_perguntas()
 
@@ -600,11 +597,10 @@ def explicacao_questao(id_explicacao):
     )
     cursor = conexao.cursor(dictionary=True)
 
-    placeholders = ", ".join(["%s"] * len(id_explicacao))
-    query = "SELECT * FROM perguntas WHERE id IN ({})".format(placeholders)
-
-    # Executa a query passando a lista como tupla
-    cursor.execute(query, tuple(id_explicacao))
+    cursor.execute(
+        "SELECT * FROM explicacoes_respostas WHERE explicacoes_respostas.id = %s",
+        (id_explicacao,),
+    )
 
     respostas = cursor.fetchall()
 
@@ -619,9 +615,9 @@ if __name__ == "__main__":
     # Execução Antes do Servidor
     with app.app_context():
         inicializar_mysql()
-        limpar_terminal()
         print("----- Inicializando Banco de Dados -----")
         inicializar_banco_de_dados()
+        limpar_terminal()
         print("----- Populando Banco de Dados -----")
         popular_db()
         limpar_terminal()

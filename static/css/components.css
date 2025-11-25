@@ -26,6 +26,7 @@
 
 #div-load-screen > .span-progress-info {
   font-size: 1.5rem;
+  text-align: center;
 }
 
 #div-load-screen > * {
