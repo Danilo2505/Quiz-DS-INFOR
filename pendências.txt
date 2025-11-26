@@ -1,4 +1,5 @@
-- Passar as questões e respostas do usuário para a página resultado.html
-- Corrigir as questões na resultado.html e mostrar o resultado
--- Implementar tela de carregamento
+- criar-quiz.html
+-- Criar caixas de seleção para cada questão
+-- Estilizar a tabela com as questões quando for criar o quiz
+- Fazer as telas adicionar.html, atualizar.html, excluir.html, index.html
 - Criar um sitema de notificações

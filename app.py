@@ -230,6 +230,23 @@ def listar_nomes_temas_pelo_id_pergunta(id_pergunta: int):
     return lista_nomes_temas
 
 
+# - Nomes dos Níveis -
+def obter_nomes_niveis():
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("SELECT id, nome FROM niveis_dificuldade ORDER BY id;")
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    # Monta o dicionário { id: nome }
+    return {linha["id"]: linha["nome"] for linha in resultados}
+
+
 '''
 # --- Atualizar ---
 def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano):
@@ -283,10 +300,33 @@ def popular_db():
 # Ler/Listar
 @app.route("/")
 def index():
+    # Redireciona para a rota quiz
+    return redirect(url_for("criar_quiz"))
+
     # Faz uma requisição por todas as perguntas
     perguntas = listar_perguntas()
 
     return render_template("index.html", perguntas=perguntas)
+
+
+# Criar Quiz
+@app.route("/criar-quiz.html")
+def criar_quiz():
+    # Faz uma requisição por todas as perguntas
+    perguntas = listar_perguntas()
+    # Pega os nomes dos temas e correlaciona com o ID
+    nomes_temas = {}
+    nomes_niveis = obter_nomes_niveis()
+    for pergunta in perguntas:
+        id = pergunta["id"]
+        nomes_temas[id] = listar_nomes_temas_pelo_id_pergunta(id)
+
+    return render_template(
+        "criar-quiz.html",
+        perguntas=perguntas,
+        nomes_temas=nomes_temas,
+        nomes_niveis=nomes_niveis,
+    )
 
 
 # Quiz

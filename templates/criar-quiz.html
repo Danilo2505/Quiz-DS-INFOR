@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar Quiz DS e Infor</title>
+
+    <!-- ----- CSS ----- -->
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/fonts.css" />
+    <link rel="stylesheet" href="/static/css/colors.css" />
+    <link rel="stylesheet" href="/static/css/components.css" />
+    <link rel="stylesheet" href="/static/css/global.css" />
+    <!-- --- CSS Específico --- -->
+    <link rel="stylesheet" href="/static/css/pages/criar-quiz.css" />
+  </head>
+
+  <!-- Armazena as variáveis do Jinja2 -->
+  <script>
+    const perguntas = {{ perguntas | tojson }};
+    const nomesTemas = {{ nomes_temas | tojson }};
+    const nomesNiveis = {{ nomes_niveis | tojson }};
+  </script>
+
+  <!-- ----- Scripts ----- -->
+  <script src="/static/js/helpers.js"></script>
+  <script src="/static/js/db.js"></script>
+  <script src="/static/js/components.js"></script>
+  <script src="/static/js/themeManager.js" defer></script>
+  <!-- --- Script Específico --- -->
+  <script src="/static/js/pages/criar-quiz.js" defer></script>
+
+  <body>
+    <h1>Criar Quiz</h1>
+
+    <table>
+      <tr>
+        <th>Pergunta</th>
+        <th>Nível</th>
+        <th>Temas</th>
+        <th>Incluir</th>
+      </tr>
+
+      {% for pergunta in perguntas %}
+      <tr id_pergunta="{{ pergunta.id }}">
+        <td>{{ pergunta.conteudo.pergunta }}</td>
+        <td>{{ nomes_niveis[pergunta.id_nivel] }}</td>
+        <td>{{ nomes_temas[pergunta.id] | join(", ") }}</td>
+        <td></td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <!-- --- Botão de Tema --- -->
+    <button id="button-tema" aria-label="Mudar tema"></button>
+  </body>
+</html>
