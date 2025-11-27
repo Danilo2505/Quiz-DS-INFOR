@@ -31,25 +31,45 @@
   <script src="/static/js/pages/criar-quiz.js" defer></script>
 
   <body>
-    <h1>Criar Quiz</h1>
+    <header>
+      <!-- Componente -->
+      <div id="div-top-bar">
+        <h1>Criar Quiz</h1>
+      </div>
+    </header>
 
-    <table>
-      <tr>
-        <th>Pergunta</th>
-        <th>Nível</th>
-        <th>Temas</th>
-        <th>Incluir</th>
-      </tr>
-
-      {% for pergunta in perguntas %}
-      <tr id_pergunta="{{ pergunta.id }}">
-        <td>{{ pergunta.conteudo.pergunta }}</td>
-        <td>{{ nomes_niveis[pergunta.id_nivel] }}</td>
-        <td>{{ nomes_temas[pergunta.id] | join(", ") }}</td>
-        <td></td>
-      </tr>
-      {% endfor %}
-    </table>
+    <main>
+      <form action="">
+        <table id="table-questoes">
+          <thead>
+            <tr>
+              <th>Pergunta</th>
+              <th>Nível</th>
+              <th>Temas</th>
+              <th>Incluir</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pergunta in perguntas %}
+            <!-- <tr id_pergunta="{{ pergunta.id }}"> -->
+            <tr>
+              <td>{{ pergunta.conteudo.pergunta }}</td>
+              <td>{{ nomes_niveis[pergunta.id_nivel] }}</td>
+              <td>{{ nomes_temas[pergunta.id] | join(", ") }}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  name="id_pergunta"
+                  value="{{ pergunta.id }}"
+                />
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button type="submit">Criar Quiz</button>
+      </form>
+    </main>
 
     <!-- --- Botão de Tema --- -->
     <button id="button-tema" aria-label="Mudar tema"></button>

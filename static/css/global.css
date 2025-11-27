@@ -15,6 +15,7 @@ body {
   flex-direction: column;
 }
 
+#button-home,
 #button-teste {
   position: fixed;
   bottom: 1rem;
@@ -28,6 +29,7 @@ body {
   padding: 1.125rem;
 }
 
+#button-home svg,
 #button-teste svg {
   fill: var(--bg-color-1);
   width: 100%;
@@ -56,4 +58,72 @@ body {
 button:hover svg {
   transform: scale(1.1);
   transition: 0.3s;
+}
+
+/* --- Tabelas --- */
+table {
+  width: auto;
+  border-collapse: collapse; /* Colapsa bordas adjacentes em uma só */
+}
+
+thead tr,
+tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--accent-color-1);
+}
+
+th,
+td {
+  padding: 0.5rem;
+  height: 100%;
+  vertical-align: middle;
+}
+
+th {
+  width: auto;
+}
+
+/* Ímpar */
+tbody tr:nth-child(odd) td {
+  background-color: var(--bg-color-2);
+}
+
+/* Par */
+thead tr th,
+tbody tr:nth-child(even) td {
+  background-color: var(--bg-color-3);
+}
+
+/* ----- Formulários ----- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+select,
+input {
+  border: 1px solid var(--accent-color-1);
+  background-color: transparent;
+  border-radius: 0.5rem;
+  color: var(--accent-color-1);
+  font-size: 1.25rem;
+  padding: 0.6rem 0.8rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+input[type="submit"] {
+  margin-top: 1.5rem;
+}
+
+option {
+  background-color: var(--bg-color-1);
+}
+
+select {
+  min-height: 2.25rem;
+}
+
+.escondido {
+  display: none;
 }

@@ -195,6 +195,14 @@ function execucaoInicial() {
   buttonPreviousCard.addEventListener("click", voltarPergunta);
   buttonNextCard.addEventListener("click", avancarPergunta);
 
+  // ----- Botão Home -----
+  const buttonHome = document.querySelector("#button-home");
+
+  buttonHome.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
+  /*
   // ----- Testes -----
   const buttonTeste = document.querySelector("#button-teste");
 
@@ -206,6 +214,7 @@ function execucaoInicial() {
       (icone = "")
     );
   });
+  */
 }
 
 execucaoInicial();

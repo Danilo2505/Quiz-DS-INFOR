@@ -1,10 +1,10 @@
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 main {
+  justify-self: center;
+  align-self: center;
   min-width: 60dvw;
   width: 100%;
   max-width: 90dvw;

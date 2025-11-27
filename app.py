@@ -58,14 +58,16 @@ def limpar_terminal(aguardar: bool = False):
 
 
 def inicializar_mysql():
+    print("----- Inicializando o MySQL -----")
     try:
-        if os.system == "nt" and os.path.exists(CAMINHO_INICIALIZADOR_MYSQL):
+        print(os.name)
+        if os.name == "nt" and os.path.exists(CAMINHO_INICIALIZADOR_MYSQL):
             subprocess.Popen(
                 [CAMINHO_INICIALIZADOR_MYSQL],
                 shell=True,
             )
     except Exception as e:
-        print("----- Erro ao iniciar o MySQL -----")
+        print("--- Erro ao iniciar o MySQL ---")
         print(e)
 
 
