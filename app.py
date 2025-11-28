@@ -129,23 +129,21 @@ def conectar():
     return conexao
 
 
-# ----- CRUD -----
-
-"""
-# --- Criar ---
-def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: str):
-    conexao = conectar()
+def query(sql, convert_json=False):
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
     cursor = conexao.cursor(dictionary=True)
-
-    sql = f"INSERT INTO livros(titulo, autor, ano_publicacao, src_imagem) VALUES (%s, %s, %s, %s)"
-    valores = (titulo, autor, ano_publicacao, src_imagem)
-
-    cursor.execute(sql, valores)
-    conexao.commit()
+    cursor.execute(sql)
+    dados = cursor.fetchall()
     conexao.close()
 
-    print("Livro Adicionado com Sucesso!!!")
-"""
+    if convert_json:
+        for item in dados:
+            for campo in convert_json:
+                item[campo] = json.loads(item[campo])
+
+    return dados
 
 
 # --- Ler/Listar ---
@@ -356,6 +354,252 @@ def quiz():
 def resultado():
     # !!!
     return render_template("resultado.html")
+
+
+# Adicionar
+@app.route("/adicionar.html")
+def adicionar_html():
+
+    # ----- Temas -----
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome FROM temas ORDER BY nome")
+    temas = cursor.fetchall()
+    conexao.close()
+
+    # ----- Níveis -----
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, nome, nivel_dificuldade FROM niveis_dificuldade ORDER BY nivel_dificuldade"
+    )
+    niveis = cursor.fetchall()
+    conexao.close()
+
+    # ----- Explicações -----
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, conteudo FROM explicacoes_respostas ORDER BY id")
+    explicacoes = cursor.fetchall()
+    conexao.close()
+
+    # ----- Perguntas com JOINs -----
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT 
+            p.id,
+            p.conteudo,
+            p.alternativas,
+            p.id_resposta,
+            t.nome AS nome_tema,
+            nd.nome AS nome_nivel,
+            er.conteudo AS explicacao
+        FROM perguntas p
+        LEFT JOIN temas t ON p.id_tema = t.id
+        LEFT JOIN niveis_dificuldade nd ON p.id_nivel = nd.id
+        LEFT JOIN explicacoes_respostas er ON p.id_explicacao = er.id
+        ORDER BY p.id
+    """
+    )
+    perguntas = cursor.fetchall()
+    conexao.close()
+
+    # Converte JSON → dict/list
+    for p in perguntas:
+        p["conteudo"] = json.loads(p["conteudo"])
+        p["alternativas"] = json.loads(p["alternativas"])
+
+    # ----- Perguntas x Temas -----
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id_pergunta, id_tema FROM perguntas_temas")
+    perguntas_temas = cursor.fetchall()
+    conexao.close()
+
+    return render_template(
+        "adicionar.html",
+        temas=temas,
+        niveis=niveis,
+        explicacoes=explicacoes,
+        perguntas=perguntas,
+        perguntas_temas=perguntas_temas,
+    )
+
+
+# Atualizar
+@app.route("/atualizar.html")
+def atualizar_html():
+
+    # Temas
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome FROM temas ORDER BY nome")
+    temas = cursor.fetchall()
+    conexao.close()
+
+    # Níveis
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, nome, nivel_dificuldade FROM niveis_dificuldade ORDER BY nivel_dificuldade"
+    )
+    niveis = cursor.fetchall()
+    conexao.close()
+
+    # Explicações
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, conteudo FROM explicacoes_respostas ORDER BY id")
+    explicacoes = cursor.fetchall()
+    conexao.close()
+
+    # Perguntas
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT 
+            p.id,
+            p.conteudo,
+            p.alternativas,
+            p.id_resposta,
+            t.nome AS nome_tema,
+            nd.nome AS nome_nivel,
+            er.conteudo AS explicacao
+        FROM perguntas p
+        LEFT JOIN temas t ON p.id_tema = t.id
+        LEFT JOIN niveis_dificuldade nd ON p.id_nivel = nd.id
+        LEFT JOIN explicacoes_respostas er ON p.id_explicacao = er.id
+        ORDER BY p.id
+    """
+    )
+    perguntas = cursor.fetchall()
+    conexao.close()
+
+    # Converte JSON
+    for p in perguntas:
+        p["conteudo"] = json.loads(p["conteudo"])
+        p["alternativas"] = json.loads(p["alternativas"])
+
+    # Perguntas x Temas
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id_pergunta, id_tema FROM perguntas_temas")
+    perguntas_temas = cursor.fetchall()
+    conexao.close()
+
+    return render_template(
+        "atualizar.html",
+        temas=temas,
+        niveis=niveis,
+        explicacoes=explicacoes,
+        perguntas=perguntas,
+        perguntas_temas=perguntas_temas,
+    )
+
+
+# Excluir
+@app.route("/excluir.html")
+def excluir_html():
+
+    # Temas
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, nome FROM temas ORDER BY nome")
+    temas = cursor.fetchall()
+    conexao.close()
+
+    # Níveis
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, nome, nivel_dificuldade FROM niveis_dificuldade ORDER BY nivel_dificuldade"
+    )
+    niveis = cursor.fetchall()
+    conexao.close()
+
+    # Explicações
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id, conteudo FROM explicacoes_respostas ORDER BY id")
+    explicacoes = cursor.fetchall()
+    conexao.close()
+
+    # Perguntas
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute(
+        """
+        SELECT 
+            p.id,
+            p.conteudo,
+            p.alternativas,
+            p.id_resposta,
+            t.nome AS nome_tema,
+            nd.nome AS nome_nivel,
+            er.conteudo AS explicacao
+        FROM perguntas p
+        LEFT JOIN temas t ON p.id_tema = t.id
+        LEFT JOIN niveis_dificuldade nd ON p.id_nivel = nd.id
+        LEFT JOIN explicacoes_respostas er ON p.id_explicacao = er.id
+        ORDER BY p.id
+    """
+    )
+    perguntas = cursor.fetchall()
+    conexao.close()
+
+    # Converte JSON
+    for p in perguntas:
+        p["conteudo"] = json.loads(p["conteudo"])
+        p["alternativas"] = json.loads(p["alternativas"])
+
+    # Tabela intermediária
+    conexao = mysql.connector.connect(
+        host="localhost", user="root", password="", database=DB_NAME
+    )
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT id_pergunta, id_tema FROM perguntas_temas")
+    perguntas_temas = cursor.fetchall()
+    conexao.close()
+
+    return render_template(
+        "excluir.html",
+        temas=temas,
+        niveis=niveis,
+        explicacoes=explicacoes,
+        perguntas=perguntas,
+        perguntas_temas=perguntas_temas,
+    )
 
 
 '''

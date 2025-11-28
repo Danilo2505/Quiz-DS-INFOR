@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adicionar - Quiz DS e Infor</title>
 
-    <!-- ----- CSS ----- -->
+    <!-- ----- CSS Global ----- -->
     <link rel="stylesheet" href="/static/css/reset.css" />
     <link rel="stylesheet" href="/static/css/fonts.css" />
     <link rel="stylesheet" href="/static/css/colors.css" />
     <link rel="stylesheet" href="/static/css/components.css" />
     <link rel="stylesheet" href="/static/css/global.css" />
-    <!-- --- CSS Específico --- -->
-    <link rel="stylesheet" href="/static/css/pages/index.css" />
+
+    <!-- ----- CSS da Página ----- -->
+    <link rel="stylesheet" href="/static/css/pages/adicionar.css" />
   </head>
 
   <!-- ----- Scripts ----- -->
@@ -20,6 +21,7 @@
   <script src="/static/js/db.js"></script>
   <script src="/static/js/components.js"></script>
   <script src="/static/js/themeManager.js" defer></script>
+  <script src="/static/js/pages/adicionar.js" defer></script>
 
   <body>
     <header>
@@ -29,7 +31,86 @@
       </div>
     </header>
 
-    <!-- --- Botão de Tema --- -->
-    <button id="button-tema" aria-label="Mudar tema"></button>
+    <main>
+      <!-- ----- Selecionar Tema e Nível ----- -->
+      <section id="section-header-form">
+        <h2>Configurações da Questão</h2>
+
+        <form id="form-configuracoes" action="POST">
+          <label for="select-tema">Tema:</label>
+          <select id="select-tema" name="id_tema">
+            {% for tema in temas %}
+            <option value="{{ tema.id_tema }}">{{ tema.nome }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="select-nivel">Nível:</label>
+          <select id="select-nivel" name="id_nivel">
+            {% for nivel in niveis %}
+            <option value="{{ nivel.id_nivel }}">{{ nivel.nome }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </section>
+
+      <!-- ----- Conteúdo da Questão ----- -->
+      <section id="section-conteudo">
+        <h2>Enunciado</h2>
+
+        <form id="form-enunciado" action="POST">
+          <label for="textarea-enunciado">Texto:</label>
+          <textarea id="textarea-enunciado" name="conteudo" rows="4"></textarea>
+        </form>
+      </section>
+
+      <!-- ----- Alternativas ----- -->
+      <section id="section-alternativas">
+        <h2>Alternativas</h2>
+
+        <form id="form-alternativas" action="POST">
+          <div class="div-alt">
+            <label for="input-alt-A">A:</label>
+            <input type="text" id="input-alt-A" name="A" />
+          </div>
+
+          <div class="div-alt">
+            <label for="input-alt-B">B:</label>
+            <input type="text" id="input-alt-B" name="B" />
+          </div>
+
+          <div class="div-alt">
+            <label for="input-alt-C">C:</label>
+            <input type="text" id="input-alt-C" name="C" />
+          </div>
+
+          <div class="div-alt">
+            <label for="input-alt-D">D:</label>
+            <input type="text" id="input-alt-D" name="D" />
+          </div>
+
+          <div class="div-alt">
+            <label for="input-alt-E">E:</label>
+            <input type="text" id="input-alt-E" name="E" />
+          </div>
+
+          <label for="select-correta">Alternativa correta:</label>
+          <select id="select-correta" name="correta">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+          </select>
+        </form>
+      </section>
+
+      <!-- ----- Botão Final ----- -->
+      <section id="section-salvar">
+        <button id="button-salvar-questao">Salvar Questão</button>
+      </section>
+
+      <!-- ----- Botão de Tema ----- -->
+      <button id="button-tema" aria-label="Mudar tema"></button>
+    </main>
   </body>
 </html>
