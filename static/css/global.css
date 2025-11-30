@@ -15,6 +15,11 @@ body {
   flex-direction: column;
 }
 
+main > * {
+  margin: 1rem auto;
+  max-width: 90dvw;
+}
+
 #button-home,
 #button-teste {
   position: fixed;
@@ -66,6 +71,58 @@ table {
   border-collapse: collapse; /* Colapsa bordas adjacentes em uma só */
 }
 
+/* --- Largura das colunas ---*/
+table th:nth-child(1),
+table td:nth-child(1) {
+  max-width: 100px;
+}
+
+table th:nth-child(3),
+table td:nth-child(3) {
+  max-width: 80px;
+}
+
+table col:nth-child(3),
+table col:nth-child(4) {
+  /* width: 20%; */
+}
+
+/* Colunas alinhadas ao centro */
+table th,
+table td {
+  text-align: center;
+}
+
+table td button {
+  transform: translateY(1.5px);
+}
+
+/* Colunas alinhadas à esquerda */
+table th:nth-child(1),
+table td:nth-child(1) {
+  text-align: left;
+}
+
+/* Última coluna */
+table td:last-child {
+  align-items: center;
+  width: fit-content;
+}
+
+/* Bordas arredondadas */
+table tr:first-child th:nth-child(1) {
+  border-top-left-radius: 1rem;
+}
+table tr:first-child th:last-child {
+  border-top-right-radius: 1rem;
+}
+table tr:last-child td:nth-child(1) {
+  border-bottom-left-radius: 1rem;
+}
+table tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}
+
 thead tr,
 tbody tr:not(:last-child) {
   border-bottom: 1px solid var(--accent-color-1);
@@ -100,6 +157,11 @@ form {
   gap: 1rem;
 }
 
+fieldset {
+  display: flex;
+  flex-direction: column;
+}
+
 select,
 input {
   border: 1px solid var(--accent-color-1);
@@ -116,6 +178,33 @@ input[type="submit"] {
   margin-top: 1.5rem;
 }
 
+input[type="checkbox"] {
+  width: 1rem;
+  aspect-ratio: 1/1;
+  background-color: var(--bg-color-3);
+  color: var(--accent-color-1);
+  padding: 0.6rem;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--accent-color-4);
+}
+
+button[type="submit"] {
+  align-self: center;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  padding: 0.8rem;
+  font-size: 1rem;
+  background-color: var(--bg-color-1);
+  color: var(--accent-color-1);
+  border: 2px solid var(--accent-color-1);
+  border-radius: 1rem;
+}
+
 option {
   background-color: var(--bg-color-1);
 }
@@ -124,6 +213,62 @@ select {
   min-height: 2.25rem;
 }
 
+textarea {
+  background-color: transparent;
+  outline: none;
+  color: var(--accent-color-1);
+  border: 1px solid var(--accent-color-1);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
 .escondido {
   display: none;
+}
+
+/* ----- Responsividade ----- */
+
+/* Telas pequenas (tablets) */
+@media (min-width: 600px) {
+  table {
+    /* min-width: 100%; */
+    width: auto;
+    table-layout: auto;
+  }
+
+  table th:nth-child(1),
+  table td:nth-child(1) {
+    max-width: auto;
+  }
+}
+
+/* Telas médias (monitores 1000p ou mais) */
+@media (min-width: 1001px) {
+  main > * {
+    max-width: 800px;
+  }
+
+  input[type="checkbox"] {
+    padding: 0.7rem;
+  }
+
+  button[type="submit"] {
+    max-width: 400px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Telas médias-grandes (monitores 1200p ou mais) */
+@media (min-width: 1201px) {
+  main > * {
+    max-width: 1000px;
+  }
+}
+
+/* Telas grandes (monitores 1440p ou mais) */
+@media (min-width: 1440px) {
+  main > * {
+    max-width: 1200px;
+  }
 }

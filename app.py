@@ -6,6 +6,10 @@ import json
 from werkzeug.routing import BaseConverter
 
 
+def json_loads_filter(value):
+    return json.loads(value)
+
+
 class ListConverter(BaseConverter):
     def to_python(self, value):
         return [int(x) for x in value.split(",")]
@@ -15,6 +19,7 @@ class ListConverter(BaseConverter):
 
 
 app = Flask(__name__)
+app.jinja_env.filters["loads"] = json_loads_filter
 app.url_map.converters["list"] = ListConverter  # Para receber listas na rota
 # !!! Definir uma secret key na .env quand for entregar !!!
 # app.secret_key = secrets.token_hex(32)
@@ -25,6 +30,14 @@ HOST = "0.0.0.0"
 PORT = 5000
 DB_NAME = "quiz_ds_infor"
 CAMINHO_INICIALIZADOR_MYSQL = r"C:\xampp\mysql_start.bat"
+TABELAS_PERMITIDAS = {
+    "temas": ["nome"],
+    "niveis_dificuldade": ["nome", "nivel_dificuldade"],
+    "explicacoes_respostas": ["conteudo"],
+    "perguntas": ["conteudo", "alternativas", "id_resposta"],
+    "perguntas_temas": ["id_pergunta", "id_tema"],
+}
+
 
 caminho_schema_sql = "schema.sql"
 caminho_population_sql = "population.sql"
@@ -387,6 +400,8 @@ def adicionar_html():
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT id, conteudo FROM explicacoes_respostas ORDER BY id")
     explicacoes = cursor.fetchall()
+    for i in range(len(explicacoes)):
+        explicacoes[i]["conteudo"] = json.loads(explicacoes[i]["conteudo"])
     conexao.close()
 
     # ----- Perguntas com JOINs -----
@@ -427,6 +442,8 @@ def adicionar_html():
     cursor.execute("SELECT id_pergunta, id_tema FROM perguntas_temas")
     perguntas_temas = cursor.fetchall()
     conexao.close()
+
+    print(niveis)
 
     return render_template(
         "adicionar.html",
@@ -815,6 +832,97 @@ def atualizar_html():
 
 
 # --- API ---
+# Adicionar dado
+@app.route("/api/adicionar", methods=["POST"])
+def adicionar_item():
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"sucesso": False, "mensagem": "JSON inválido."}), 400
+
+        nome_tabela = data.get("tabela")
+        valores = data.get("valores")
+
+        # --- validações ---
+        if nome_tabela not in TABELAS_PERMITIDAS:
+            return (
+                jsonify(
+                    {
+                        "sucesso": False,
+                        "mensagem": f"Inserção não permitida na tabela '{nome_tabela}'.",
+                    }
+                ),
+                403,
+            )
+
+        if not valores or not isinstance(valores, dict):
+            return (
+                jsonify(
+                    {"sucesso": False, "mensagem": "Valores inválidos ou ausentes."}
+                ),
+                400,
+            )
+
+        # verifica colunas obrigatórias
+        obrigatorias = TABELAS_PERMITIDAS[nome_tabela]
+        for col in obrigatorias:
+            if col not in valores:
+                return (
+                    jsonify(
+                        {
+                            "sucesso": False,
+                            "mensagem": f"Coluna obrigatória '{col}' ausente.",
+                        }
+                    ),
+                    400,
+                )
+
+        # ----- Preparar dados -----
+        colunas = ", ".join(valores.keys())
+        placeholders = ", ".join(["%s"] * len(valores))
+
+        sql = f"INSERT INTO {nome_tabela} ({colunas}) VALUES ({placeholders})"
+
+        # converter valores JSON para string (em caso de objetos)
+        valores_final = []
+        for v in valores.values():
+            if isinstance(v, (dict, list)):
+                valores_final.append(json.dumps(v, ensure_ascii=False))
+            else:
+                valores_final.append(v)
+
+        # ----- Executar -----
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute(sql, valores_final)
+        conexao.commit()
+
+        # --- Obtém o id quando existir ---
+        novo_id = cursor.lastrowid if cursor.lastrowid != 0 else None
+
+        return (
+            jsonify(
+                {
+                    "sucesso": True,
+                    "mensagem": "Item adicionado com sucesso.",
+                    "tabela": nome_tabela,
+                    "id": novo_id,  # será None em tabelas sem AUTO_INCREMENT
+                    "valores": valores,  # opcional, mas útil para relacionamentos compostos
+                }
+            ),
+            201,
+        )
+
+    except mysql.connector.Error as e:
+        print("Erro MySQL:", e)
+        return jsonify({"sucesso": False, "mensagem": f"Erro MySQL: {e}"}), 500
+
+    except Exception as e:
+        print("Erro geral:", e)
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {e}"}), 500
+
+
 # Pega todas as perguntas
 @app.route("/api/perguntas", methods=["GET"])
 def obter_pergunta():
@@ -895,6 +1003,55 @@ def explicacao_questao(id_explicacao):
 
     # Retorna a lista de dicionários formatada como uma resposta JSON HTTP
     return jsonify(respostas)
+
+
+# Adicionar uma nova questão
+@app.route("/api/adicionar-questao", methods=["POST"])
+def api_adicionar_questao():
+    try:
+        dados = request.get_json()
+
+        print(dados)
+
+        id_tema = dados["id_tema"]
+        id_nivel = dados["id_nivel"]
+        conteudo = dados["conteudo"]
+        alternativas = dados["alternativas"]
+        correta = dados["correta"]
+
+        # Transforma no formato que o banco usa
+        conteudo_json = json.dumps({"texto": conteudo}, ensure_ascii=False)
+        alternativas_json = json.dumps(
+            [{"letra": k, "texto": v} for k, v in alternativas.items()],
+            ensure_ascii=False,
+        )
+
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        sql = """
+            INSERT INTO perguntas (conteudo, alternativas, id_resposta, id_nivel)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(sql, (conteudo_json, alternativas_json, correta, id_nivel))
+        conexao.commit()
+
+        novo_id = cursor.lastrowid
+
+        # Relaciona com o tema
+        cursor.execute(
+            "INSERT INTO perguntas_temas (id_pergunta, id_tema) VALUES (%s, %s)",
+            (novo_id, id_tema),
+        )
+        conexao.commit()
+
+        conexao.close()
+
+        return {"mensagem": "Questão adicionada!", "id": novo_id}
+
+    except Exception as e:
+        print("ERRO API:", e)
+        return {"erro": str(e)}, 500
 
 
 if __name__ == "__main__":
