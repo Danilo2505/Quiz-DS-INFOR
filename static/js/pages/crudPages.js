@@ -9,7 +9,11 @@ const selectorsSectionsModos = [
 function definirModo(modoSelecionado) {
   // Coloca a classe escondido em cada seção de modo
   selectorsSectionsModos.forEach((modo) => {
-    document.querySelector(modo).classList.add("escondido");
+    try {
+      document.querySelector(modo).classList.add("escondido");
+    } catch (erro) {
+      console.error(erro.message);
+    }
   });
 
   // Retira a classe "escondido" do modo selecionado

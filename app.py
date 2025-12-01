@@ -443,8 +443,6 @@ def adicionar_html():
     perguntas_temas = cursor.fetchall()
     conexao.close()
 
-    print(niveis)
-
     return render_template(
         "adicionar.html",
         temas=temas,
@@ -486,6 +484,9 @@ def atualizar_html():
     cursor = conexao.cursor(dictionary=True)
     cursor.execute("SELECT id, conteudo FROM explicacoes_respostas ORDER BY id")
     explicacoes = cursor.fetchall()
+    # Converte JSON → dict para permitir acessos como explicacao.conteudo['titulo'] no template
+    for i in range(len(explicacoes)):
+        explicacoes[i]["conteudo"] = json.loads(explicacoes[i]["conteudo"])
     conexao.close()
 
     # Perguntas
@@ -609,6 +610,11 @@ def excluir_html():
     perguntas_temas = cursor.fetchall()
     conexao.close()
 
+    nomes_temas = {}
+    for pergunta in perguntas:
+        id = pergunta["id"]
+        nomes_temas[id] = listar_nomes_temas_pelo_id_pergunta(id)
+
     return render_template(
         "excluir.html",
         temas=temas,
@@ -616,6 +622,7 @@ def excluir_html():
         explicacoes=explicacoes,
         perguntas=perguntas,
         perguntas_temas=perguntas_temas,
+        nomes_temas=nomes_temas,
     )
 
 

@@ -48,6 +48,7 @@ label {
   line-height: 1.25;
   margin: 0.5rem 0 0.5rem;
   font-weight: 600;
+  font-size: 1.35rem;
 }
 
 /* Cabeçalhos responsivos */
@@ -102,7 +103,7 @@ h6 {
   }
   label,
   h6 {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   p,
@@ -110,7 +111,7 @@ h6 {
   li,
   td,
   th {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
   }
 }
 
@@ -133,7 +134,7 @@ h6 {
   }
   label,
   h6 {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
   }
 
   p,
@@ -141,7 +142,7 @@ h6 {
   li,
   td,
   th {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   blockquote {

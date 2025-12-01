@@ -3,7 +3,7 @@
   |----------------|-----------|-------|--------------------|-----------------------|
   | adicionar.html | x | x | x | x |
   | atualizar.html | | | | |
-  | excluir.html | | | | |
+  | excluir.html | x | x | x | - |
 - Criar animação para mostrar que está adicionando, atualizando ou excluindo
 
 #- Criar um sitema de notificações
