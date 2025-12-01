@@ -926,7 +926,6 @@ def adicionar_item():
 
 # Excluir dado
 @app.route("/api/excluir", methods=["POST"])
-@app.route("/api/excluir", methods=["POST"])
 def excluir_item():
     try:
         data = request.get_json()
@@ -940,9 +939,11 @@ def excluir_item():
         condicao = data.get(
             "condicao"
         )  # Ex: "id = %s" ou "id_pergunta = %s AND id_tema = %s"
-        condicao_valores = tuple(data.get("params", []))  # Ex: [3] ou [12, 3]
+        condicao_valores = tuple(
+            data.get("params", [])
+        )  # Ex: [3] → (3,) | [12,3] → (12,3)
 
-        # --- Validação da tabela ---
+        # --- Validação da Tabela ---
         if not nome_tabela or nome_tabela not in TABELAS_PERMITIDAS:
             return (
                 jsonify(
@@ -954,7 +955,7 @@ def excluir_item():
                 403,
             )
 
-        # --- Validação da condição ---
+        # --- Validação da Condição ---
         if not condicao or not condicao_valores:
             return (
                 jsonify(
@@ -963,13 +964,13 @@ def excluir_item():
                 400,
             )
 
-        # --- Execução ---
-        db = get_db()
-        cursor = db.cursor()
+        # --- Execução no MySQL ---
+        conexao = conectar()
+        cursor = conexao.cursor()
 
         query = f"DELETE FROM {nome_tabela} WHERE {condicao}"
         cursor.execute(query, condicao_valores)
-        db.commit()
+        conexao.commit()
 
         linhas_afetadas = cursor.rowcount
 
@@ -987,8 +988,12 @@ def excluir_item():
             200,
         )
 
-    except sqlite3.Error as e:
-        db.rollback()
+    except mysql.connector.Error as e:
+        try:
+            conexao.rollback()
+        except:
+            pass
+
         return jsonify({"sucesso": False, "mensagem": f"Erro no banco: {e}"}), 500
 
     except Exception as e:

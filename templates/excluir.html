@@ -15,6 +15,15 @@
     <link rel="stylesheet" href="/static/css/pages/index.css" />
   </head>
 
+  <!-- Armazena as variáveis do Jinja2 -->
+  <script>
+    const temas = {{ temas | tojson }};
+    const niveis = {{ niveis | tojson }};
+    const explicacoes = {{ explicacoes | tojson }};
+    const perguntas = {{ perguntas | tojson }};
+    const perguntasTemas = {{ perguntas_temas | tojson }};
+  </script>
+
   <!-- ----- Scripts ----- -->
   <script src="/static/js/helpers.js"></script>
   <script src="/static/js/db.js"></script>
@@ -47,45 +56,30 @@
         <h2>Pergunta</h2>
 
         <form action="POST">
-          <label for="input-questao-pergunta">Pergunta:</label>
-          <input name="pergunta" id="input-questao-pergunta" type="text" />
-
-          <label for="select-id-explicacao">Explicação da Resposta:</label>
-          <select name="id_explicacao" id="select-id-explicacao">
-            <option value="-1">Sem Explicação</option>
-            {% for explicacao in explicacoes %}
-            <option value="{{ explicacao.id }}">
-              {{ explicacao.conteudo['titulo'] }} | {{
-              explicacao.conteudo['texto'] }}
+          <h3>Selecione a pergunta pelo enunciado:</h3>
+          <select name="id_pergunta" id="select-questao-enunciado">
+            {% for pergunta in perguntas %}
+            <option value="{{ pergunta.id }}">
+              {{ pergunta.conteudo['pergunta'] }}
             </option>
             {% endfor %}
           </select>
 
-          <label for="select-id-tema">Tema(s):</label>
-          <ul>
-            {% for tema in temas %}
-            <li
-              style="
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: 0.5rem;
-              "
-            >
-              <input type="checkbox" name="id_tema" value="{{ tema.id }}" />
-              <p>{{ tema.nome }}</p>
-            </li>
-            {% endfor %}
-          </ul>
+          <label for="textarea-explicacao">Explicação da Resposta:</label>
+          <textarea
+            id="textarea-explicacao"
+            style="resize: vertical"
+            readonly
+          ></textarea>
 
-          <label for="select-id-dificuldade">Nível de Dificuldade:</label>
-          <select name="id_nivel" id="select-id-dificuldade">
-            {% for nivel in niveis %}
-            <option value="{{ nivel.id }}">
-              {{ nivel.nome }} (Dificuldade: {{ nivel.nivel_dificuldade }})
-            </option>
-            {% endfor %}
-          </select>
+          <label for="ul-temas">Tema(s):</label>
+          <ul></ul>
+
+          <label for="input-nivel-dificuldade">Nível de Dificuldade:</label>
+          <input
+            id="input-nivel-dificuldade"
+            readonly
+          ></input>
 
           <input type="submit" value="Excluir Disciplina" />
         </form>
