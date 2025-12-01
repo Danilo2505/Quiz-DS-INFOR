@@ -832,6 +832,7 @@ def atualizar_html():
 
 
 # --- API ---
+# - CRUD -
 # Adicionar dado
 @app.route("/api/adicionar", methods=["POST"])
 def adicionar_item():
@@ -923,6 +924,78 @@ def adicionar_item():
         return jsonify({"sucesso": False, "mensagem": f"Erro interno: {e}"}), 500
 
 
+# Excluir dado
+@app.route("/api/excluir", methods=["POST"])
+@app.route("/api/excluir", methods=["POST"])
+def excluir_item():
+    try:
+        data = request.get_json()
+        if not data:
+            return (
+                jsonify({"sucesso": False, "mensagem": "Requisição JSON inválida."}),
+                400,
+            )
+
+        nome_tabela = data.get("tabela")
+        condicao = data.get(
+            "condicao"
+        )  # Ex: "id = %s" ou "id_pergunta = %s AND id_tema = %s"
+        condicao_valores = tuple(data.get("params", []))  # Ex: [3] ou [12, 3]
+
+        # --- Validação da tabela ---
+        if not nome_tabela or nome_tabela not in TABELAS_PERMITIDAS:
+            return (
+                jsonify(
+                    {
+                        "sucesso": False,
+                        "mensagem": f"Tabela não permitida: {nome_tabela}.",
+                    }
+                ),
+                403,
+            )
+
+        # --- Validação da condição ---
+        if not condicao or not condicao_valores:
+            return (
+                jsonify(
+                    {"sucesso": False, "mensagem": "Condição inválida para exclusão."}
+                ),
+                400,
+            )
+
+        # --- Execução ---
+        db = get_db()
+        cursor = db.cursor()
+
+        query = f"DELETE FROM {nome_tabela} WHERE {condicao}"
+        cursor.execute(query, condicao_valores)
+        db.commit()
+
+        linhas_afetadas = cursor.rowcount
+
+        return (
+            jsonify(
+                {
+                    "sucesso": True,
+                    "mensagem": "Item excluído com sucesso.",
+                    "tabela": nome_tabela,
+                    "condicao": condicao,
+                    "params": condicao_valores,
+                    "linhas_excluidas": linhas_afetadas,
+                }
+            ),
+            200,
+        )
+
+    except sqlite3.Error as e:
+        db.rollback()
+        return jsonify({"sucesso": False, "mensagem": f"Erro no banco: {e}"}), 500
+
+    except Exception as e:
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {e}"}), 500
+
+
+# - Perguntas para o Quiz -
 # Pega todas as perguntas
 @app.route("/api/perguntas", methods=["GET"])
 def obter_pergunta():
@@ -1003,55 +1076,6 @@ def explicacao_questao(id_explicacao):
 
     # Retorna a lista de dicionários formatada como uma resposta JSON HTTP
     return jsonify(respostas)
-
-
-# Adicionar uma nova questão
-@app.route("/api/adicionar-questao", methods=["POST"])
-def api_adicionar_questao():
-    try:
-        dados = request.get_json()
-
-        print(dados)
-
-        id_tema = dados["id_tema"]
-        id_nivel = dados["id_nivel"]
-        conteudo = dados["conteudo"]
-        alternativas = dados["alternativas"]
-        correta = dados["correta"]
-
-        # Transforma no formato que o banco usa
-        conteudo_json = json.dumps({"texto": conteudo}, ensure_ascii=False)
-        alternativas_json = json.dumps(
-            [{"letra": k, "texto": v} for k, v in alternativas.items()],
-            ensure_ascii=False,
-        )
-
-        conexao = conectar()
-        cursor = conexao.cursor()
-
-        sql = """
-            INSERT INTO perguntas (conteudo, alternativas, id_resposta, id_nivel)
-            VALUES (%s, %s, %s, %s)
-        """
-        cursor.execute(sql, (conteudo_json, alternativas_json, correta, id_nivel))
-        conexao.commit()
-
-        novo_id = cursor.lastrowid
-
-        # Relaciona com o tema
-        cursor.execute(
-            "INSERT INTO perguntas_temas (id_pergunta, id_tema) VALUES (%s, %s)",
-            (novo_id, id_tema),
-        )
-        conexao.commit()
-
-        conexao.close()
-
-        return {"mensagem": "Questão adicionada!", "id": novo_id}
-
-    except Exception as e:
-        print("ERRO API:", e)
-        return {"erro": str(e)}, 500
 
 
 if __name__ == "__main__":

@@ -31,6 +31,116 @@
       </div>
     </header>
 
+    <main>
+      <section id="section-escolher-modo">
+        <h2>Selecione o que deseja excluir</h2>
+
+        <select name="Select do Modo" id="select-modo">
+          <option value="pergunta">Pergunta</option>
+          <option value="tema">Tema</option>
+          <option value="nivel_dificuldade">Nível de Dificuldade</option>
+          <option value="explicacao_resposta">Explicação da Resposta</option>
+        </select>
+      </section>
+
+      <section id="section-pergunta" class="escondido">
+        <h2>Pergunta</h2>
+
+        <form action="POST">
+          <label for="input-questao-pergunta">Pergunta:</label>
+          <input name="pergunta" id="input-questao-pergunta" type="text" />
+
+          <label for="select-id-explicacao">Explicação da Resposta:</label>
+          <select name="id_explicacao" id="select-id-explicacao">
+            <option value="-1">Sem Explicação</option>
+            {% for explicacao in explicacoes %}
+            <option value="{{ explicacao.id }}">
+              {{ explicacao.conteudo['titulo'] }} | {{
+              explicacao.conteudo['texto'] }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <label for="select-id-tema">Tema(s):</label>
+          <ul>
+            {% for tema in temas %}
+            <li
+              style="
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 0.5rem;
+              "
+            >
+              <input type="checkbox" name="id_tema" value="{{ tema.id }}" />
+              <p>{{ tema.nome }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <label for="select-id-dificuldade">Nível de Dificuldade:</label>
+          <select name="id_nivel" id="select-id-dificuldade">
+            {% for nivel in niveis %}
+            <option value="{{ nivel.id }}">
+              {{ nivel.nome }} (Dificuldade: {{ nivel.nivel_dificuldade }})
+            </option>
+            {% endfor %}
+          </select>
+
+          <input type="submit" value="Excluir Disciplina" />
+        </form>
+      </section>
+
+      <section id="section-tema" class="escondido">
+        <h2>Tema</h2>
+
+        <form action="POST">
+          <label for="input-nome-tema">Nome:</label>
+          <input name="nome" id="input-nome-tema" type="text" />
+
+          <input type="submit" value="Excluir Tema" />
+        </form>
+      </section>
+
+      <section id="section-nivel-dificuldade" class="escondido">
+        <h2>Nível de Dificuldade</h2>
+
+        <form action="POST">
+          <label for="input-nome-nivel-dificuldade">Nome:</label>
+          <input name="nome" id="input-nome-nivel-dificuldade" type="text" />
+          <label for="input-nivel-dificuldade">Nível de Dificuldade:</label>
+          <input
+            name="nivel_dificuldade"
+            id="input-nivel-dificuldade"
+            type="number"
+          />
+
+          <input type="submit" value="Excluir Nível de Dificuldade" />
+        </form>
+      </section>
+
+      <section id="section-explicacao-resposta" class="escondido">
+        <h2>Explicação da Resposta</h2>
+
+        <form action="POST">
+          <label for="input-titulo-explicacao-resposta">Título:</label>
+          <input
+            name="titulo"
+            id="input-titulo-explicacao-resposta"
+            type="text"
+          />
+          <label for="textarea-texto-explicacao-resposta">Texto:</label>
+          <textarea
+            name="texto"
+            id="textarea-texto-explicacao-resposta"
+            style="resize: vertical"
+          ></textarea>
+
+          <input type="submit" value="Excluir Explicação para Resposta" />
+        </form>
+      </section>
+    </main>
+
     <!-- --- Botão de Tema --- -->
     <button id="button-tema" aria-label="Mudar tema"></button>
   </body>
