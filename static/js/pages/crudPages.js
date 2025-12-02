@@ -18,24 +18,24 @@ function definirModo(modoSelecionado) {
 
   // Retira a classe "escondido" do modo selecionado
   switch (modoSelecionado) {
-    // Modo de adição de disciplinas
+    // Modo de adição de perguntas
     case "pergunta":
       document.querySelector("#section-pergunta").classList.remove("escondido");
       break;
 
-    // Modo de adição de salas
+    // Modo de adição de temas
     case "tema":
       document.querySelector("#section-tema").classList.remove("escondido");
       break;
 
-    // Modo de adição de alunos
+    // Modo de adição de níveis de dificuldade
     case "nivel_dificuldade":
       document
         .querySelector("#section-nivel-dificuldade")
         .classList.remove("escondido");
       break;
 
-    // Modo de adição de notas
+    // Modo de adição de explicações das respsotas
     case "explicacao_resposta":
       document
         .querySelector("#section-explicacao-resposta")

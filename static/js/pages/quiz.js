@@ -3,7 +3,7 @@ const buttonPreviousCard = document.querySelector("#button-previous-card");
 const buttonNextCard = document.querySelector("#button-next-card");
 
 // --- Criar Card para uma Pergunta ---
-function criarCardPergunta(pergunta) {
+function criarCardPergunta(pergunta, numeroDaPergunta) {
   // Cria os elementos do card da pergunta
   const divCardBox = document.createElement("div");
   const divCardPergunta = document.createElement("div");
@@ -48,7 +48,7 @@ function criarCardPergunta(pergunta) {
   }
 
   // Adiciona o conteúdo da pergunta
-  pConteudoPergunta.textContent = pergunta.conteudo.pergunta;
+  pConteudoPergunta.textContent = `${numeroDaPergunta}. ${pergunta.conteudo.pergunta}`;
 
   // Monta a estrutura do card da pergunta
   divCardPergunta.appendChild(ulTemas);
@@ -80,12 +80,16 @@ function carregarPerguntas() {
     );
   }
 
+  let numeroDaPergunta = 1;
+
   // Cria os cards das perguntas
   for (pergunta of idsPerguntas) {
     divCardsPerguntas.insertBefore(
-      criarCardPergunta(pergunta),
+      criarCardPergunta(pergunta, numeroDaPergunta),
       parentDivCardEnvio
     );
+
+    numeroDaPergunta += 1;
   }
 
   // Scroll para o primeiro card sem resposta

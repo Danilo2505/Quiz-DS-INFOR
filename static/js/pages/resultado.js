@@ -1,4 +1,8 @@
-function criarCardQuestaoCorrecao(idRespostaUsuario, dadosQuestao) {
+function criarCardQuestaoCorrecao(
+  idRespostaUsuario,
+  dadosQuestao,
+  numeroDaQuestao
+) {
   console.log(dadosQuestao);
   const alfabetoMinusculo = rangeChar("a", "z");
   // const alfabetoMaiusculo = rangeChar("A", "Z");
@@ -35,9 +39,9 @@ function criarCardQuestaoCorrecao(idRespostaUsuario, dadosQuestao) {
 
   // Verifica se a resposta do usuário está correta
   if (idRespostaUsuario == dadosQuestao.id_resposta) {
-    h2.textContent = `✔️ Questão ${dadosQuestao.id}`;
+    h2.textContent = `✔️ Questão ${numeroDaQuestao}`;
   } else {
-    h2.textContent = `❌ Questão ${dadosQuestao.id}`;
+    h2.textContent = `❌ Questão ${numeroDaQuestao}`;
     const h5Explicacao = document.createElement("h5");
     const h6ExplicacaoTitulo = document.createElement("h6");
     const pExplicacaoTexto = document.createElement("p");
@@ -100,13 +104,18 @@ async function execucaoInicial() {
   // --- Correção das Respostas ---
   const divCardsQuestoes = document.querySelector("#div-cards-questoes");
   telaCarregamento.definirInfoProgresso("Corrigindo...");
+  let numeroDaQuestao = 1;
   // Compara as respostas do usuário com as respostas corretas
   for (const [idQuestao, idResposta] of Object.entries(perguntasERespostas)) {
     const questao = dadosDoFlask.filter((questao) => {
       return questao ? idQuestao == questao.id : false;
     })[0];
 
-    divCardsQuestoes.appendChild(criarCardQuestaoCorrecao(idResposta, questao));
+    divCardsQuestoes.appendChild(
+      criarCardQuestaoCorrecao(idResposta, questao, numeroDaQuestao)
+    );
+
+    numeroDaQuestao += 1;
   }
 
   // !!!
