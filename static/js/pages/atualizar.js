@@ -103,8 +103,17 @@ formPergunta.addEventListener("submit", async (e) => {
       "id = %s",
       [idPergunta]
     );
+    const _n = new Notificacao(
+      "success",
+      "Pergunta atualizada",
+      "A pergunta foi atualizada com sucesso.",
+      "",
+      3500
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 
@@ -122,8 +131,17 @@ formTema.addEventListener("submit", async (e) => {
       "id = %s",
       [idTema]
     );
+    const _n = new Notificacao(
+      "success",
+      "Tema atualizado",
+      "O tema foi atualizado com sucesso.",
+      "",
+      3000
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 
@@ -142,8 +160,17 @@ formNivelDificuldade.addEventListener("submit", async (e) => {
       "id = %s",
       [idNivel]
     );
+    const _n = new Notificacao(
+      "success",
+      "Nível atualizado",
+      "O nível de dificuldade foi atualizado.",
+      "",
+      3000
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 
@@ -167,8 +194,17 @@ formExplicacaoResposta.addEventListener("submit", async (e) => {
       "id = %s",
       [idExplicacao]
     );
+    const _n = new Notificacao(
+      "success",
+      "Explicação atualizada",
+      "A explicação da resposta foi atualizada.",
+      "",
+      3000
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 

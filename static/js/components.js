@@ -1,5 +1,4 @@
-/*
-// https://codepen.io/GemmaCroad/pen/RNWwGzG
+// Base: https://codepen.io/GemmaCroad/pen/RNWwGzG
 class Notificacao {
   constructor(tipo, titulo, mensagem, icone, tempoExpiracao = 5000) {
     this.tempoExpiracao = tempoExpiracao;
@@ -29,10 +28,10 @@ class Notificacao {
     // Cria o elemento de Notificação
     this.divNotificacao = document.createElement("div");
     // Classes CSS do Elemento
-    this.divNotificacao.classList.add(
-      "div-notification",
-      `div-notification-${tipo}`
-    );
+    this.divNotificacao.classList.add("div-notification");
+    if (this.tipo) {
+      this.divNotificacao.classList.add(`div-notification-${this.tipo}`);
+    }
 
     // --- Botão para Fechar a Notificação ---
     this.buttonFechar = document.createElement("div");
@@ -72,18 +71,85 @@ class Notificacao {
 
     // Acrescenta à Lista
     this.divListaNotificacoes.appendChild(this.divNotificacao);
+
+    // Estado interno
+    this._timeoutId = null;
+    this._removing = false;
+
+    // Configura botão fechar
+    this.buttonFechar.addEventListener("click", () => {
+      this.remover();
+    });
+
+    // Inicia comportamento padrão: mostrar + auto-fechar
+    this.mostrar();
   }
 
-  mostrar() {}
+  mostrar() {
+    // Mostra a notificação (já está no DOM). Inicia o auto-fechar.
+    // Pode ser chamado novamente para reiniciar o timeout.
+    this.sairAutomaticamente();
+  }
 
-  remover() {}
+  remover() {
+    // Evita remover múltiplas vezes
+    if (this._removing) return;
+    this._removing = true;
+
+    // Cancela timeout pendente
+    if (this._timeoutId) {
+      clearTimeout(this._timeoutId);
+      this._timeoutId = null;
+    }
+
+    // Adiciona classe que anima a saída (definida no CSS)
+    this.divNotificacao.classList.add("removing");
+
+    // Remove do DOM após animação terminar
+    const removerElemento = () => {
+      if (this.divNotificacao && this.divNotificacao.parentNode) {
+        this.divNotificacao.parentNode.removeChild(this.divNotificacao);
+      }
+      // Limpa referências
+      this.divNotificacao = null;
+      this.divCabecalho = null;
+      this.divTitulo = null;
+      this.divIcone = null;
+      this.divMensagem = null;
+      this.buttonFechar = null;
+    };
+
+    // Tenta esperar pelo evento de animação; fallback para 350ms
+    const onAnimEnd = (ev) => {
+      if (ev && ev.target !== ev.currentTarget) return;
+      removerElemento();
+      this.divNotificacao &&
+        this.divNotificacao.removeEventListener("animationend", onAnimEnd);
+    };
+
+    if (this.divNotificacao) {
+      this.divNotificacao.addEventListener("animationend", onAnimEnd);
+      // Safety fallback
+      setTimeout(() => {
+        if (this._removing) removerElemento();
+      }, 400);
+    } else {
+      removerElemento();
+    }
+  }
 
   sairAutomaticamente() {
-    delay(this.tempoExpiracao);
-    this.remover();
+    // Se tempoExpiracao for 0 ou menor, não auto-fechar
+    if (!this.tempoExpiracao || this.tempoExpiracao <= 0) return;
+
+    // Garante que não existem múltiplos timeouts
+    if (this._timeoutId) clearTimeout(this._timeoutId);
+
+    this._timeoutId = setTimeout(() => {
+      this.remover();
+    }, this.tempoExpiracao);
   }
 }
-*/
 
 // Classe para controlar a Tela de Carregamento
 class TelaCarregamento {
@@ -225,6 +291,10 @@ function configurarEventListenersComponente() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  criarComponenteTopBar();
-  configurarEventListenersComponente();
+  try {
+    criarComponenteTopBar();
+    configurarEventListenersComponente();
+  } catch (erro) {
+    console.error(erro.message);
+  }
 });

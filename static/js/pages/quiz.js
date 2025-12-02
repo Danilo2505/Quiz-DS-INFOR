@@ -127,10 +127,15 @@ async function enviarRespostas() {
     `.div-card-pergunta[id_pergunta]:not(:has(.alternativa-selecionada))`
   );
   if (cardSemResposta) {
-    const p = document.querySelector(".div-card-envio p");
-    // !!!
-    p.textContent = "Há perguntas sem resposta! Realmente deseja enviar?";
-    // cardSemResposta.scrollIntoView();
+    // Exibe notificação de aviso sobre perguntas sem resposta
+    const notificacao = new Notificacao(
+      "warning",
+      "Perguntas incompletas",
+      "Existem perguntas sem resposta. Revise antes de enviar.",
+      "",
+      5000
+    );
+    cardSemResposta.scrollIntoView();
     return;
   }
 
@@ -206,8 +211,8 @@ function execucaoInicial() {
     window.location.href = "/";
   });
 
-  /*
   // ----- Testes -----
+  /*
   const buttonTeste = document.querySelector("#button-teste");
 
   buttonTeste.addEventListener("click", () => {

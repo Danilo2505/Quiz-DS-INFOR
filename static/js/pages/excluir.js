@@ -103,8 +103,17 @@ formPergunta.addEventListener("submit", async (e) => {
     const respostaPerguntas = await excluirDadoFlask("perguntas", "id = %s", [
       idPergunta,
     ]);
+    const _n = new Notificacao(
+      "success",
+      "Pergunta excluída",
+      "A pergunta foi removida com sucesso.",
+      "",
+      3500
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 
@@ -116,8 +125,17 @@ formTema.addEventListener("submit", async (e) => {
 
   try {
     const resposta = await excluirDadoFlask("temas", "id = %s", [idTema]);
+    const _n = new Notificacao(
+      "success",
+      "Tema excluído",
+      "O tema foi removido com sucesso.",
+      "",
+      3000
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 
@@ -131,8 +149,17 @@ formNivelDificuldade.addEventListener("submit", async (e) => {
     const resposta = await excluirDadoFlask("niveis_dificuldade", "id = %s", [
       idNivel,
     ]);
+    const _n = new Notificacao(
+      "success",
+      "Nível excluído",
+      "O nível de dificuldade foi removido.",
+      "",
+      3000
+    );
+    setTimeout(() => window.location.reload(), _n.tempoExpiracao + 350);
   } catch (erro) {
     console.error("Erro: " + erro.message);
+    new Notificacao("error", "Erro", erro.message, "", 6000);
   }
 });
 

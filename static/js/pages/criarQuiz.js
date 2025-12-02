@@ -13,5 +13,14 @@ document
     // Redireciona para a página do quiz com os IDs como parâmetros na URL
     if (idsPerguntas.length > 0) {
       window.location.href = `/quiz.html?q=${idsPerguntas.join("&q=")}`;
+    } else {
+      // Aviso quando não há perguntas selecionadas
+      new Notificacao(
+        "warning",
+        "Nenhuma pergunta selecionada",
+        "Selecione ao menos uma pergunta para criar o quiz.",
+        "",
+        4500
+      );
     }
   });
