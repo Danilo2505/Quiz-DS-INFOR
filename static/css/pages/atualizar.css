@@ -1,0 +1,16 @@
+#ul-alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#ul-alternativas li {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#ul-alternativas li input {
+  padding: 0.5rem;
+}

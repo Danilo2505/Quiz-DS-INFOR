@@ -528,6 +528,13 @@ def atualizar_html():
     perguntas_temas = cursor.fetchall()
     conexao.close()
 
+    nomes_temas = {}
+    for pergunta in perguntas:
+        id = pergunta["id"]
+        nomes_temas[id] = listar_nomes_temas_pelo_id_pergunta(id)
+
+    indicadores_alternativas = alfabeto_minusculo
+
     return render_template(
         "atualizar.html",
         temas=temas,
@@ -535,6 +542,8 @@ def atualizar_html():
         explicacoes=explicacoes,
         perguntas=perguntas,
         perguntas_temas=perguntas_temas,
+        nomes_temas=nomes_temas,
+        indicadores_alternativas=indicadores_alternativas,
     )
 
 
@@ -626,218 +635,6 @@ def excluir_html():
     )
 
 
-'''
-# Criar
-@app.route("/adicionar.html")
-def adicionar_html():
-
-    # Faz uma requisição por todos os bimestres
-    bimestres = query_db(
-        """
-        SELECT 
-            bimestres.id_bimestre, 
-            bimestres.nome
-        FROM bimestres
-        ORDER BY bimestres.nome;"""
-    )
-
-    # Faz uma requisição por todas as disciplinas
-    disciplinas = query_db(
-        """
-        SELECT 
-            disciplinas.id_disciplina, 
-            disciplinas.nome
-        FROM disciplinas
-        ORDER BY disciplinas.nome;"""
-    )
-
-    # Faz uma requisição por todas as salas
-    salas = query_db(
-        """
-        SELECT 
-            salas.id_sala, 
-            salas.nome
-        FROM salas
-        ORDER BY salas.nome;"""
-    )
-
-    # Faz uma requisição por todas as notas
-    notas = query_db(
-        """
-        SELECT 
-            notas.id_nota, 
-            notas.valor, 
-            -- Cria aliases
-            alunos.nome AS nome_aluno,
-            disciplinas.nome AS nome_disciplina,
-            bimestres.nome AS nome_bimestre
-        FROM notas
-        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
-        JOIN alunos ON notas.id_aluno = alunos.id_aluno
-        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
-        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
-        ORDER BY notas.id_nota;"""
-    )
-
-    return render_template(
-        "adicionar.html",
-        bimestres=bimestres,
-        disciplinas=disciplinas,
-        salas=salas,
-        notas=notas,
-    )
-
-
-# Excluir
-@app.route("/excluir.html")
-def excluir_html():
-    # Faz uma requisição por todos os bimestres
-    bimestres = query_db(
-        """
-        SELECT 
-            bimestres.id_bimestre, 
-            bimestres.nome
-        FROM bimestres
-        ORDER BY bimestres.nome;"""
-    )
-
-    # Faz uma requisição por todas as disciplinas
-    disciplinas = query_db(
-        """
-        SELECT 
-            disciplinas.id_disciplina, 
-            disciplinas.nome
-        FROM disciplinas
-        ORDER BY disciplinas.nome;"""
-    )
-
-    # Faz uma requisição por todas as salas
-    salas = query_db(
-        """
-        SELECT 
-            salas.id_sala, 
-            salas.nome
-        FROM salas
-        ORDER BY salas.nome;"""
-    )
-
-    # Faz uma requisição por todos os alunos
-    alunos = query_db(
-        """
-        SELECT 
-            alunos.id_aluno, 
-            alunos.nome, 
-            salas.nome AS nome_sala -- Cria um alias
-        FROM alunos
-        -- Une alunos.id_sala a salas.id_sala
-        JOIN salas ON alunos.id_sala = salas.id_sala
-        ORDER BY salas.nome;"""
-    )
-
-    # Faz uma requisição por todas as notas
-    notas = query_db(
-        """
-        SELECT 
-            notas.id_nota, 
-            notas.valor, 
-            -- Cria aliases
-            alunos.nome AS nome_aluno,
-            disciplinas.nome AS nome_disciplina,
-            bimestres.nome AS nome_bimestre
-        FROM notas
-        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
-        JOIN alunos ON notas.id_aluno = alunos.id_aluno
-        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
-        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
-        ORDER BY alunos.nome;"""
-    )
-
-    return render_template(
-        "excluir.html",
-        bimestres=bimestres,
-        disciplinas=disciplinas,
-        salas=salas,
-        alunos=alunos,
-        notas=notas,
-    )
-
-
-# Atualizar
-@app.route("/atualizar.html")
-def atualizar_html():
-
-    # Faz uma requisição por todos os bimestres
-    bimestres = query_db(
-        """
-        SELECT 
-            bimestres.id_bimestre, 
-            bimestres.nome
-        FROM bimestres
-        ORDER BY bimestres.nome;"""
-    )
-
-    # Faz uma requisição por todas as disciplinas
-    disciplinas = query_db(
-        """
-        SELECT 
-            disciplinas.id_disciplina, 
-            disciplinas.nome
-        FROM disciplinas
-        ORDER BY disciplinas.nome;"""
-    )
-
-    # Faz uma requisição por todas as salas
-    salas = query_db(
-        """
-        SELECT 
-            salas.id_sala, 
-            salas.nome
-        FROM salas
-        ORDER BY salas.nome;"""
-    )
-
-    # Faz uma requisição por todos os alunos
-    alunos = query_db(
-        """
-        SELECT 
-            alunos.id_aluno, 
-            alunos.nome, 
-            salas.nome AS nome_sala -- Cria um alias
-        FROM alunos
-        -- Une alunos.id_sala a salas.id_sala
-        JOIN salas ON alunos.id_sala = salas.id_sala
-        ORDER BY salas.nome;"""
-    )
-
-    # Faz uma requisição por todas as notas
-    notas = query_db(
-        """
-        SELECT 
-            notas.id_nota, 
-            notas.valor, 
-            -- Cria aliases
-            alunos.nome AS nome_aluno,
-            disciplinas.nome AS nome_disciplina,
-            bimestres.nome AS nome_bimestre
-        FROM notas
-        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
-        JOIN alunos ON notas.id_aluno = alunos.id_aluno
-        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
-        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
-        ORDER BY alunos.nome;"""
-    )
-
-    return render_template(
-        "atualizar.html",
-        bimestres=bimestres,
-        disciplinas=disciplinas,
-        salas=salas,
-        alunos=alunos,
-        notas=notas,
-    )
-'''
-
-
 # --- API ---
 # - CRUD -
 # Adicionar dado
@@ -920,6 +717,89 @@ def adicionar_item():
                 }
             ),
             201,
+        )
+
+    except mysql.connector.Error as e:
+        print("Erro MySQL:", e)
+        return jsonify({"sucesso": False, "mensagem": f"Erro MySQL: {e}"}), 500
+
+    except Exception as e:
+        print("Erro geral:", e)
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {e}"}), 500
+
+
+# Atualizar dado
+@app.route("/api/atualizar", methods=["POST"])
+def atualizar_item():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"sucesso": False, "mensagem": "JSON inválido."}), 400
+
+        nome_tabela = data.get("tabela")
+        valores = data.get("valores")
+        condicao = data.get("condicao")  # Ex: "id = %s"
+        condicao_params = data.get("params", [])  # lista
+
+        # --- validações ---
+        if not nome_tabela or nome_tabela not in TABELAS_PERMITIDAS:
+            return (
+                jsonify(
+                    {
+                        "sucesso": False,
+                        "mensagem": f"Atualização não permitida na tabela '{nome_tabela}'.",
+                    }
+                ),
+                403,
+            )
+
+        if not valores or not isinstance(valores, dict):
+            return (
+                jsonify(
+                    {"sucesso": False, "mensagem": "Valores inválidos ou ausentes."}
+                ),
+                400,
+            )
+
+        if not condicao:
+            return (
+                jsonify(
+                    {"sucesso": False, "mensagem": "Condição de atualização ausente."}
+                ),
+                400,
+            )
+
+        # ----- Monta a cláusula SET -----
+        set_clause = ", ".join([f"{col} = %s" for col in valores.keys()])
+
+        sql = f"UPDATE {nome_tabela} SET {set_clause} WHERE {condicao}"
+
+        # ----- Converter dados (incluindo JSON) -----
+        valores_sql = []
+        for v in valores.values():
+            if isinstance(v, (dict, list)):
+                valores_sql.append(json.dumps(v, ensure_ascii=False))
+            else:
+                valores_sql.append(v)
+
+        valores_finais = valores_sql + condicao_params
+
+        # ----- Executar -----
+        conexao = conectar()
+        cursor = conexao.cursor()
+        cursor.execute(sql, valores_finais)
+        conexao.commit()
+
+        return (
+            jsonify(
+                {
+                    "sucesso": True,
+                    "mensagem": "Item atualizado com sucesso.",
+                    "tabela": nome_tabela,
+                    "afetados": cursor.rowcount,
+                }
+            ),
+            200,
         )
 
     except mysql.connector.Error as e:

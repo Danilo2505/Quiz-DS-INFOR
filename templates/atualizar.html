@@ -12,8 +12,18 @@
     <link rel="stylesheet" href="/static/css/components.css" />
     <link rel="stylesheet" href="/static/css/global.css" />
     <!-- --- CSS Específico --- -->
-    <link rel="stylesheet" href="/static/css/pages/index.css" />
+    <link rel="stylesheet" href="/static/css/pages/atualizar.css" />
   </head>
+
+  <!-- Armazena as variáveis do Jinja2 -->
+  <script>
+    const temas = {{ temas | tojson }};
+    const niveis = {{ niveis | tojson }};
+    const explicacoes = {{ explicacoes | tojson }};
+    const perguntas = {{ perguntas | tojson }};
+    const perguntasTemas = {{ perguntas_temas | tojson }};
+    const nomesTemas = {{ nomes_temas | tojson }};
+  </script>
 
   <!-- ----- Scripts ----- -->
   <script src="/static/js/helpers.js"></script>
@@ -30,6 +40,163 @@
         <h1>Atualizar Questão</h1>
       </div>
     </header>
+
+    <main>
+      <section id="section-escolher-modo">
+        <h2>Selecione o que deseja atualizar</h2>
+
+        <select name="Select do Modo" id="select-modo">
+          <option value="pergunta">Pergunta</option>
+          <option value="tema">Tema</option>
+          <option value="nivel_dificuldade">Nível de Dificuldade</option>
+          <option value="explicacao_resposta">Explicação da Resposta</option>
+        </select>
+      </section>
+
+      <section id="section-pergunta" class="escondido">
+        <h2>Pergunta</h2>
+
+        <form action="POST">
+          <h3>Selecione a pergunta pelo enunciado:</h3>
+          <select name="id_pergunta" id="select-questao-enunciado">
+            {% for pergunta in perguntas %}
+            <option value="{{ pergunta.id }}">
+              {{ pergunta.conteudo['pergunta'] }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <label for="input-novo-enunciado">Novo enunciado:</label>
+          <input name="pergunta" type="text" id="input-novo-enunciado" />
+
+          <label for="ul-alternativas">Alternativas:</label>
+          <ul id="ul-alternativas"></ul>
+
+          <label for="select-pergunta-alternativa-correta"
+            >Alternativa correta:</label
+          >
+          <select name="id_resposta" id="select-pergunta-alternativa-correta">
+            {% for i in range(perguntas[0].alternativas | length) %}
+            <option value="{{ i + 1 }}">
+              Alternativa ({{ indicadores_alternativas[i] }})
+            </option>
+            {% endfor %}
+          </select>
+
+          <label for="select-pergunta-id-explicacao"
+            >Explicação da Resposta:</label
+          >
+          <select name="id_explicacao" id="select-pergunta-id-explicacao">
+            {% for explicacao in explicacoes %}
+            <option value="{{ explicacao.id }}">
+              {{ explicacao.conteudo['titulo'] }} | {{
+              explicacao.conteudo['texto'] }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <label for="ul-temas">Tema(s):</label>
+          <select name="id_tema" id="select-questao-enunciado">
+            {% for tema in temas %}
+            <option value="{{ tema.id }}">{{ tema.nome }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="select-pergunta-id-dificuldade"
+            >Nível de Dificuldade:</label
+          >
+          <select name="id_nivel" id="select-pergunta-id-dificuldade">
+            {% for nivel in niveis %}
+            <option value="{{ nivel.id }}">
+              {{ nivel.nome }} (Dificuldade: {{ nivel.nivel_dificuldade }})
+            </option>
+            {% endfor %}
+          </select>
+
+          <input type="submit" value="Atualizar Disciplina" />
+        </form>
+      </section>
+
+      <section id="section-tema" class="escondido">
+        <h2>Tema</h2>
+
+        <form action="POST">
+          <h3>Selecione o tema:</h3>
+          <select name="id_tema" id="select-questao-enunciado">
+            {% for tema in temas %}
+            <option value="{{ tema.id }}">{{ tema.nome }}</option>
+            {% endfor %}
+          </select>
+
+          <h3>Novo nome para o tema:</h3>
+          <input type="text" name="novo_nome_tema" id="input-novo-nome-tema" />
+
+          <input type="submit" value="Atualizar Tema" />
+        </form>
+      </section>
+
+      <section id="section-nivel-dificuldade" class="escondido">
+        <h2>Nível de Dificuldade</h2>
+
+        <form action="POST">
+          <h3>Selecione o nível de dificuldade:</h3>
+          <select name="id_nivel" id="select-id-dificuldade">
+            {% for nivel in niveis %}
+            <option value="{{ nivel.id }}">
+              {{ nivel.nome }} (Dificuldade: {{ nivel.nivel_dificuldade }})
+            </option>
+            {% endfor %}
+          </select>
+
+          <h3>Novo nome da dificuldade:</h3>
+          <input
+            name="nome_nivel_dificuldade"
+            id="input-nome-nivel-dificuldade"
+            type="text"
+          />
+
+          <h3>Novo nível de dificuldade:</h3>
+          <input
+            name="nivel_dificuldade"
+            id="input-nivel-dificuldade"
+            type="number"
+          />
+
+          <input type="submit" value="Atualizar Nível de Dificuldade" />
+        </form>
+      </section>
+
+      <section id="section-explicacao-resposta" class="escondido">
+        <h2>Explicação da Resposta</h2>
+
+        <form action="POST">
+          <h3>Selecione a explicação da resposta:</h3>
+          <select name="id_explicacao" id="select-id-explicacao">
+            {% for explicacao in explicacoes %}
+            <option value="{{ explicacao.id }}">
+              {{ explicacao.conteudo['titulo'] }} | {{
+              explicacao.conteudo['texto'] }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <label for="input-titulo-explicacao-resposta">Título:</label>
+          <input
+            name="titulo"
+            id="input-titulo-explicacao-resposta"
+            type="text"
+          />
+          <label for="textarea-texto-explicacao-resposta">Texto:</label>
+          <textarea
+            name="texto"
+            id="textarea-texto-explicacao-resposta"
+            style="resize: vertical"
+          ></textarea>
+
+          <input type="submit" value="Atualizar Explicação para Resposta" />
+        </form>
+      </section>
+    </main>
 
     <!-- --- Botão de Tema --- -->
     <button id="button-tema" aria-label="Mudar tema"></button>

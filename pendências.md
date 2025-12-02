@@ -2,7 +2,7 @@
   | | perguntas | temas | niveis_dificuldade | explicacoes_respostas |
   |----------------|-----------|-------|--------------------|-----------------------|
   | adicionar.html | x | x | x | x |
-  | atualizar.html | | | | |
+  | atualizar.html | | x | x | |
   | excluir.html | x | x | x | - |
 - Criar animação para mostrar que está adicionando, atualizando ou excluindo
 
